@@ -1,0 +1,4 @@
+1.	Crear una carpeta llamada API_CBR_AVATAR donde irá todo el proyecto.
+2.	Abrir la carpeta en Visual Studio Code.
+3. Iniciar un proyecto Node.js ejecutando npm init -y en la terminal.
+   Esto creará un archivo package.json con la configuración base del proyecto.
