@@ -3,15 +3,16 @@ require('dotenv').config();
 const axios = require('axios');
 
 const url = 'https://api.d-id.com/talks/tlk_iRW1DbFtB3TvsPSTKZImC';
-const options = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    authorization: `Basic ${process.env.DID_API_KEY}`
-   }
+
+const headers = {
+  Accept: 'application/json',
+  Authorization: `Basic ${process.env.DID_API_KEY}`
 };
 
-fetch(url, options)
-  .then(res => res.json())
-  .then(json => console.log(json))
-  .catch(err => console.error(err));
+axios.get(url, { headers })
+  .then(response => {
+    console.log('✅ Respuesta de la API:', response.data);
+  })
+  .catch(error => {
+    console.error('❌ Error en la solicitud:', error.response?.data || error.message);
+  });

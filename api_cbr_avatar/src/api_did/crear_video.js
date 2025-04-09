@@ -1,17 +1,16 @@
-// src/api_did/test_did.js
 require('dotenv').config();
 const axios = require('axios');
 
 // Iniciar temporizador
 console.time("⏱️ Tiempo de respuesta");
 
-// URL del endpoint de D-ID para generación de vídeo (ejemplo real)
+// URL del endpoint de D-ID para generación de vídeo
 const url = 'https://api.d-id.com/talks';
 
 const data = {
   script: {
     type: 'text',
-    input: 'Hola, soy un avatar generado por inteligencia artificial.',
+    input: 'Hola, soy un avatar virtual creado con tecnología de inteligencia artificial. Mi propósito es ayudarte a comunicar de forma moderna, clara y profesional.',
     provider: {
         type: 'microsoft', 
         voice_id: 'Sara'},
