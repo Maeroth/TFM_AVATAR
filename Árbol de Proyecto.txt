@@ -1,0 +1,61 @@
+ProjectAvatar/
+├── backend/
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── avatarController.js
+│   │   ├── voiceController.js
+│   │   ├── videoController.js
+│   │   └── realtimeController.js       # Para gestión de sesión pública con avatar
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Avatar.js
+│   │   ├── Voice.js
+│   │   └── Video.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── avatar.js
+│   │   ├── voice.js
+│   │   ├── video.js
+│   │   └── public.js                   # Ruta para usuarios no autenticados
+│   ├── services/
+│   │   ├── didService.js               # Conexión con D-ID (API o SDK)
+│   │   └── zapierService.js
+│   ├── middlewares/
+│   │   └── authMiddleware.js
+│   ├── config/
+│   │   ├── db.js
+│   │   └── auth.js
+│   ├── .env
+│   ├── app.js
+│   └── server.js
+│
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Navbar.js
+│   │   │   ├── VideoList.js
+│   │   │   ├── ParamForm.js
+│   │   │   └── AvatarLiveWidget.js     # Componente para integración SDK D-ID
+│   │   ├── pages/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Parametros.jsx
+│   │   │   ├── Videos.jsx
+│   │   │   ├── CrearVideo.jsx
+│   │   │   └── InteractuarAvatar.jsx   # Página pública sin login
+│   │   ├── services/
+│   │   │   ├── api.js
+│   │   │   ├── authService.js
+│   │   │   ├── videoService.js
+│   │   │   └── configService.js
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── routes.jsx
+│   ├── .env
+│   └── package.json
+│
+├── docker-compose.yml                  # Para levantar backend y frontend juntos
+├── .gitignore
+└── README.md
