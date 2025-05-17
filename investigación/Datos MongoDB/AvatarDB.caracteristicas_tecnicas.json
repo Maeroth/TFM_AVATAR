@@ -1,0 +1,133 @@
+[{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd32"
+  },
+  "caracteristica": "licencia_comercial",
+  "peso_id": "IMPORTANTISIMO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd33"
+  },
+  "caracteristica": "precio",
+  "peso_id": "IMPORTANTISIMO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd34"
+  },
+  "caracteristica": "tiene_streaming",
+  "peso_id": "ALTO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd35"
+  },
+  "caracteristica": "calidad_api",
+  "peso_id": "ALTO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd36"
+  },
+  "caracteristica": "clonado_de_voz",
+  "peso_id": "ALTO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd37"
+  },
+  "caracteristica": "resolucion_del_video",
+  "peso_id": "MEDIO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd38"
+  },
+  "caracteristica": "minutos_de_video_mes",
+  "peso_id": "MEDIO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd39"
+  },
+  "caracteristica": "minutos_de_streaming_mes",
+  "peso_id": "MEDIO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd3a"
+  },
+  "caracteristica": "traduccion_automatica",
+  "peso_id": "MEDIO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd3b"
+  },
+  "caracteristica": "sincronizacion_labial",
+  "peso_id": "MEDIO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd3c"
+  },
+  "caracteristica": "numero_avatares",
+  "peso_id": "MEDIO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd3d"
+  },
+  "caracteristica": "expresiones_del_avatar",
+  "peso_id": "BAJO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd3e"
+  },
+  "caracteristica": "avatares_personales",
+  "peso_id": "MUY BAJO"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd3f"
+  },
+  "caracteristica": "numero_de_voces",
+  "peso_id": "DESPRECIABLE"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd40"
+  },
+  "caracteristica": "idiomas_soportados",
+  "peso_id": "DESPRECIABLE"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd41"
+  },
+  "caracteristica": "duracion_maxima_de_video",
+  "peso_id": "DESPRECIABLE"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd42"
+  },
+  "caracteristica": "entrada_alternativa",
+  "peso_id": "DESPRECIABLE"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd43"
+  },
+  "caracteristica": "sdk_de_streaming",
+  "peso_id": "DESPRECIABLE"
+},
+{
+  "_id": {
+    "$oid": "68289e1bdf581e60147bcd44"
+  },
+  "caracteristica": "velocidad_de_generacion",
+  "peso_id": "DESPRECIABLE"
+}]

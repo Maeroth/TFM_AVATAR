@@ -1,0 +1,24 @@
+[{
+  "_id": "IMPORTANTISIMO",
+  "valor": 1
+},
+{
+  "_id": "ALTO",
+  "valor": 0.8
+},
+{
+  "_id": "MEDIO",
+  "valor": 0.5
+},
+{
+  "_id": "BAJO",
+  "valor": 0.3
+},
+{
+  "_id": "MUY BAJO",
+  "valor": 0.2
+},
+{
+  "_id": "DESPRECIABLE",
+  "valor": 0.1
+}]
