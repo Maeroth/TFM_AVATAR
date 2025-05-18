@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login.jsx';
 import Parametros from './pages/Parametros.jsx';
-import Proveedores from './pages/Proveedores_old.jsx';
+import Proveedores from './pages/Proveedores.jsx';
 
 function App() {
   return (
