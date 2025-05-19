@@ -10,9 +10,10 @@ const userSchema = new mongoose.Schema({
   sdk_de_streaming: { type: Number },  //1 = SÍ / 0 = NO
   traduccion_automatica: { type: Number }, //1 = SÍ / 0 = NO
   resolucion_del_video: { type: Number }, //0 = 720p / 1 = 1080p / 2 = 4K
+  duracion_maxima_de_video: { type: Number }, 
   sincronizacion_labial: { type: Number }, //0 = BAJA / 1 = NORMAL / 2 ALTA
   numero_avatares: { type: Number },
-  avatares_pesonales: { type: Number },
+  avatares_personales: { type: Number },
   numero_de_voces: { type: Number },
   expresiones_del_avatar: { type: Number }, //1 = SÍ / 0 = NO
   clonado_de_voz: { type: Number }, //1 = SÍ / 0 = NO

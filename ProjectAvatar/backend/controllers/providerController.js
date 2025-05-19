@@ -41,7 +41,9 @@ const nuevoProveedor = async (req, res) => {
 
 const obtenerComboProveedores = async (req, res) => {
   try {
-    const proveedores = await Proveedor.find({}, { proveedor: 1, plan: 1, _id: 1 }).lean();
+    const proveedores = await Proveedor.find({}, { proveedor: 1, plan: 1, _id: 1 })
+      .sort({ proveedor: 1, plan: 1 }) //Lo traemos ordenado para mejor visualización
+      .lean(); 
 
     const resultado = proveedores.map(p => ({
       id: p._id,
@@ -65,8 +67,52 @@ const obtenerProveedorPorId = async (req, res) => {
   }
 };
 
+const editarProveedor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { proveedor, plan, ...restoCampos } = req.body; // Excluimos proveedor y plan
+
+    const proveedorActualizado = await Proveedor.findByIdAndUpdate(
+      id,
+      { $set: restoCampos },
+      { new: true }
+    );
+
+    if (!proveedorActualizado) {
+      return res.status(404).json({ error: "Proveedor no encontrado." });
+    }
+
+    res.status(200).json({
+      message: `El proveedor "${proveedorActualizado.proveedor}" con el plan "${proveedorActualizado.plan}" ha sido actualizado correctamente.`
+    });
+  } catch (error) {
+    console.error("Error al editar proveedor:", error);
+    res.status(500).json({ error: "Error interno al editar proveedor." });
+  }
+};
+
+// Borrar un proveedor por ID
+const borrarProveedor = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const eliminado = await Proveedor.findByIdAndDelete(id);
+
+    if (!eliminado) {
+      return res.status(404).json({ error: "Proveedor no encontrado" });
+    }
+
+    res.json({ message: "Proveedor eliminado correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar proveedor:", error);
+    res.status(500).json({ error: "Error al eliminar proveedor" });
+  }
+};
+
 module.exports = {
   nuevoProveedor,
   obtenerComboProveedores,
-  obtenerProveedorPorId
+  obtenerProveedorPorId,
+  editarProveedor,
+  borrarProveedor
 };

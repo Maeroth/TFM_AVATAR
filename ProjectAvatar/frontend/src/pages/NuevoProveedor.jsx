@@ -30,6 +30,8 @@ const caracteristicas = [
 
 const NuevoProveedor = () => {
   const navigate = useNavigate();
+  const [modoEdicion, setModoEdicion] = useState(false); //es para saber si estamos editando un proveedor o creando uno nuevo
+
   const [seleccionadas, setSeleccionadas] = useState(caracteristicas);
   const [valores, setValores] = useState({});
   const [resultado, setResultado] = useState(null);
@@ -58,28 +60,72 @@ const NuevoProveedor = () => {
 
     setErrores(camposVacios); //añadimos los campos vacíos
 
-    if(camposVacios.length == 0){ //Si no hay campos vacíos, mandamos la petición al servidor
-        try {
-          const response = await axios.post("http://localhost:5000/api/proveedores/crear", criterios);
-          console.log("Resultado:", response.data);
-          setResultado(response.data.message);
-          setMostrarPopup(true);
-        } catch (error) {
-          console.error("Error en el guardado:", error);
-          if (error.response && error.response.status === 400 && error.response.data?.error) {
-            setResultado(error.response.data.error);
-          } else {
-            setResultado("Error al guardar proveedor: " + (error.response?.data?.error || "Error desconocido"));
-          }
-          setMostrarPopup(true);
+    if(camposVacios.length === 0){ //Si no hay campos vacíos, mandamos la petición al servidor
+      try{
+        let response;
+
+      if (modoEdicion && seleccionado) {
+        // Modo edición: actualizamos proveedor existente
+        response = await axios.put(`http://localhost:5000/api/proveedores/editar/${seleccionado}`, criterios);
+      } else {
+        // Modo creación: guardamos uno nuevo
+        response = await axios.post("http://localhost:5000/api/proveedores/crear", criterios);
+      }
+
+      console.log("Resultado:", response.data);
+      setResultado(response.data.message || "Guardado exitosamente");
+      setMostrarPopup(true);
+      setValores({}); //limpiamos los valores
+      setSeleccionado(""); //también se deselecciona el proveedor que estuviera seleccionado (si estuviera)
+      cargarProveedores(); // recarga el combo
+      } catch (error) {
+        console.error("Error en el guardado:", error);
+        if (error.response && error.response.status === 400 && error.response.data?.error) {
+          setResultado(error.response.data.error);
+        } else {
+          setResultado("Error al guardar proveedor: " + (error.response?.data?.error || "Error desconocido"));
         }
+        setMostrarPopup(true);
+      }
     }
   };
 
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/proveedores/comboProveedores")
+  const handleEliminar = async () => {
+
+    
+    if (!seleccionado) return;
+
+    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este proveedor?");
+    if (!confirmar) return;
+
+    try {
+      let response;
+      response = await axios.delete(`http://localhost:5000/api/proveedores/borrar/${seleccionado}`);
+      setResultado(response.data.message || "Borrado exitosamente");
+      setMostrarPopup(true);
+      setValores({}); //limpiamos los valores
+      setSeleccionado(""); //también se deselecciona el proveedor que estuviera seleccionado (si estuviera)
+      setModoEdicion(false); //se vuelve a la creación de proveedores
+      cargarProveedores(); // <--- recarga el combo
+    } catch (error) {
+          console.error("Error en el borrado:", error);
+          if (error.response && error.response.status === 400 && error.response.data?.error) {
+            setResultado(error.response.data.error);
+          } else {
+            setResultado("Error al borrar proveedor: " + (error.response?.data?.error || "Error desconocido"));
+          }
+          setMostrarPopup(true);
+        }
+  };
+
+  const cargarProveedores = () => {
+      axios.get("http://localhost:5000/api/proveedores/comboProveedores")
       .then(res => setListaProveedores(res.data))
       .catch(err => console.error("Error al cargar proveedores:", err));
+  }
+
+  useEffect(() => {
+    cargarProveedores();
   }, []);
 
   useEffect(() => {
@@ -184,13 +230,18 @@ const NuevoProveedor = () => {
   };
 
    return (
+
+    
     <div className="container py-4">
+
+     
+
       <div className="d-flex justify-content-between align-items-center mb-3">
   <h2 className="h4 mb-0">Edición de Proveedores</h2>
-  <div>
-    <button onClick={() => navigate('/proveedores/nuevo')} className="btn btn-outline-primary me-2">Añadir Proveedor</button>
-    <button onClick={() => navigate('/proveedores/editar')} className="btn btn-outline-secondary">Editar Proveedor</button>
- </div>
+     <button className="btn btn-secondary me-2" onClick={() => navigate('/proveedores')}>
+    ← Volver
+  </button>
+  
 </div>
 
 
@@ -199,7 +250,11 @@ const NuevoProveedor = () => {
   <select
     className="form-select"
     value={seleccionado}
-    onChange={(e) => setSeleccionado(e.target.value)}
+    onChange={(e) => {
+      setSeleccionado(e.target.value)
+      setModoEdicion(true); //editando un proveedor existente
+    }
+  }
   >
     <option value="">Seleccione un proveedor...</option>
     {listaProveedores.map(p => (
@@ -207,10 +262,16 @@ const NuevoProveedor = () => {
     ))}
   </select>
 </div>
+<div className="d-flex justify-content-center">
+    {modoEdicion ? (
+      <span className="badge bg-warning text-dark mb-3">Modo edición de proveedor</span>
+    ) : (
+      <span className="badge bg-success mb-3">Modo creación de nuevo proveedor</span>
+    )}
+  </div>
+  
 
-
-
-<div className="mb-4 d-flex gap-2">
+<div className="mb-4 d-flex gap-2 ">
  </div>
 
       <div className="bg-white p-3 border rounded mb-4">
@@ -220,8 +281,14 @@ const NuevoProveedor = () => {
         </div>
       </div>
 
-      <button onClick={handleGuardar} className="btn btn-primary mb-4">GUARDAR</button>
-
+      <div className="d-flex mb-4 gap-2 justify-content-center">
+        <button onClick={handleGuardar} className="btn btn-primary">GUARDAR</button>
+        {seleccionado && (
+          <button className="btn btn-danger" onClick={handleEliminar}>
+            Eliminar proveedor
+          </button>
+        )}
+      </div>
       
 
       {mostrarPopup && (
@@ -247,7 +314,8 @@ const NuevoProveedor = () => {
         </div>
       )}
 
-      
+
+
     </div>
   );
 };
