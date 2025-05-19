@@ -4,5 +4,5 @@ const PORT = process.env.PORT || 5000; // Define el puerto de escucha (usa el de
 
 // Arranca el servidor y escucha peticiones
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

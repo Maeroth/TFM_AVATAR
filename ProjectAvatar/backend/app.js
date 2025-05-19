@@ -7,16 +7,15 @@ const app = express();  // Crea la instancia de la aplicación Express
 
 //Redirecciones:
 const authRoutes = require('./routes/auth'); //Autenticación
-const bestProviderRoutes = require('./routes/bestProvider'); //Mejor proveedor
 const videoRoutes = require('./routes/videos'); //Importa Videos
+const providersRoutes = require('./routes/providers'); //Para los proveedores (editar, nuevo y borrar)
 
 //Usos
 app.use(cors()); // Habilita CORS (permite llamadas desde el frontend)
 app.use(express.json()); // Permite procesar JSON en el cuerpo de las peticiones (body-parser integrado)
 app.use('/api/videos', videoRoutes); //Petición a videoRoutes
 app.use('/api/auth', authRoutes);
-app.use('/api/bestProvider', bestProviderRoutes); //Petición a mejor proveedor
-
+app.use('/api/proveedores', providersRoutes); //Petición a Proveedor
 connectDB(); // Ejecuta la conexión con la base de datos MongoDB
 
 // Ruta de prueba para comprobar que el servidor está corriendo

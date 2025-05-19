@@ -109,6 +109,9 @@ const obtenerMejorProveedor = async (req, res) => {
         resultados.push({ proveedor: proveedor.proveedor, plan: proveedor.plan, similitud: similitudTotal });
     });
 
+    // Ordenamos los resultados por similitud, en orden desdendente para que la tabla sea más legible
+    resultados.sort((a, b) => b.similitud - a.similitud);
+
     // Calcular el valor máximo de similitud
     const maximoSimilitud = Math.max(...resultados.map(r => r.similitud));
 

@@ -1,10 +1,12 @@
 // Componente completo para configurar dinámicamente una búsqueda de proveedores mediante criterios seleccionables
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
 // Lista completa de características disponibles para configurar
 const caracteristicas = [
+  "proveedor",
+  "plan",
   "precio",
   "minutos_de_video_mes",
   "minutos_de_streaming_mes",
@@ -26,60 +28,22 @@ const caracteristicas = [
   "velocidad_de_generacion"
 ];
 
-// Características preseleccionadas que aparecen activas inicialmente
-const preseleccionadas = [
-  "precio",
-  "minutos_de_video_mes",
-  "minutos_de_streaming_mes",
-  "tiene_streaming",
-  "numero_avatares",
-  "clonado_de_voz",
-  "licencia_comercial"
-];
-
-const BusquedaProveedor = () => {
+const NuevoProveedor = () => {
   const navigate = useNavigate();
-  const [disponibles, setDisponibles] = useState(caracteristicas.filter(c => !preseleccionadas.includes(c)));
-  const [seleccionadas, setSeleccionadas] = useState(preseleccionadas);
+  const [seleccionadas, setSeleccionadas] = useState(caracteristicas);
   const [valores, setValores] = useState({});
   const [resultado, setResultado] = useState(null);
   const [mostrarPopup, setMostrarPopup] = useState(false);
   const [errores, setErrores] = useState([]); //Para las validaciones
+  const [listaProveedores, setListaProveedores] = useState([]);
+  const [seleccionado, setSeleccionado] = useState("");
 
-  // Añade una característica al bloque seleccionado
-  const moverCaracteristica = (item) => {
-    if (!seleccionadas.includes(item)) {
-      setDisponibles(disponibles.filter(c => c !== item));
-      setSeleccionadas([...seleccionadas, item]);
-    }
-  };
-
-  // Devuelve una característica al bloque disponible
-  const devolverCaracteristica = (item) => {
-    if (!disponibles.includes(item)) {
-      setSeleccionadas(seleccionadas.filter(c => c !== item));
-      setDisponibles([...disponibles, item]);
-    }
-  };
-
-  // Mueve todas al bloque seleccionado
-  const agregarTodas = () => {
-    setSeleccionadas([...seleccionadas, ...disponibles]);
-    setDisponibles([]);
-  };
-
-  // Devuelve todas al bloque disponible
-  const eliminarTodas = () => {
-    setDisponibles([...disponibles, ...seleccionadas]);
-    setSeleccionadas([]);
-  };
-
-  const cerrarPopup = () => {
+   const cerrarPopup = () => {
     setMostrarPopup(false);
   };
 
   // Envia la búsqueda al backend con los valores actuales
-  const handleBuscar = async () => {
+  const handleGuardar = async () => {
     const criterios = {};
     const camposVacios = [];
 
@@ -96,15 +60,35 @@ const BusquedaProveedor = () => {
 
     if(camposVacios.length == 0){ //Si no hay campos vacíos, mandamos la petición al servidor
         try {
-          const response = await axios.post("http://localhost:5000/api/proveedores/mejorProveedor", criterios);
+          const response = await axios.post("http://localhost:5000/api/proveedores/crear", criterios);
           console.log("Resultado:", response.data);
-          setResultado(response.data);
+          setResultado(response.data.message);
           setMostrarPopup(true);
         } catch (error) {
-          console.error("Error en la búsqueda:", error);
+          console.error("Error en el guardado:", error);
+          if (error.response && error.response.status === 400 && error.response.data?.error) {
+            setResultado(error.response.data.error);
+          } else {
+            setResultado("Error al guardar proveedor: " + (error.response?.data?.error || "Error desconocido"));
+          }
+          setMostrarPopup(true);
         }
     }
   };
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/proveedores/comboProveedores")
+      .then(res => setListaProveedores(res.data))
+      .catch(err => console.error("Error al cargar proveedores:", err));
+  }, []);
+
+  useEffect(() => {
+  if (!seleccionado) return; // Si no hay nada seleccionado, no hacemos nada
+
+  axios.get(`http://localhost:5000/api/proveedores/detalle/${seleccionado}`)
+    .then(res => setValores(res.data)) // Llenamos el formulario con los datos recibidos
+    .catch(err => console.error("Error al cargar detalles del proveedor:", err));
+  }, [seleccionado]);
 
   // Renderiza cada campo con input o select según el tipo de dato
   const renderCampo = (caracteristica, transparente, esSeleccionada) => {
@@ -167,6 +151,20 @@ const BusquedaProveedor = () => {
               <option value="1">Texto y Audio</option>
             </select>
           );
+        case "proveedor":
+          return (
+            <input type="string" className={`form-select ${errores.includes(caracteristica) ? 'is-invalid' : ''}`} placeholder={caracteristica.replace(/_/g, ' ')}
+             value={valores[caracteristica] || ""}
+             onChange={(e) => setValores({ ...valores, [caracteristica]: e.target.value })}
+            />
+          );  
+        case "plan":
+          return (
+            <input type="string" className={`form-select ${errores.includes(caracteristica) ? 'is-invalid' : ''}`} placeholder={caracteristica.replace(/_/g, ' ')}
+             value={valores[caracteristica] || ""}
+             onChange={(e) => setValores({ ...valores, [caracteristica]: e.target.value })}
+            />
+        );  
         default:
           return (
             <input type="number" className={`form-select ${errores.includes(caracteristica) ? 'is-invalid' : ''}`} placeholder={caracteristica.replace(/_/g, ' ')}
@@ -181,12 +179,6 @@ const BusquedaProveedor = () => {
       <div key={caracteristica} className={`col-md-4 ${transparente ? 'opacity-50' : ''} mb-3`}>
   <label className="form-label text-capitalize">{label}</label>
   {renderInput()}
-  <button
-    onClick={() => esSeleccionada ? devolverCaracteristica(caracteristica) : moverCaracteristica(caracteristica)}
-    className="btn btn-link btn-sm p-0 mt-1"
-  >
-    {esSeleccionada ? "Quitar de la búsqueda" : "Añadir a la búsqueda"}
-  </button>
 </div>
     );
   };
@@ -194,36 +186,45 @@ const BusquedaProveedor = () => {
    return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
-  <h2 className="h4 mb-0">Buscar Proveedor Óptimo</h2>
+  <h2 className="h4 mb-0">Edición de Proveedores</h2>
   <div>
     <button onClick={() => navigate('/proveedores/nuevo')} className="btn btn-outline-primary me-2">Añadir Proveedor</button>
     <button onClick={() => navigate('/proveedores/editar')} className="btn btn-outline-secondary">Editar Proveedor</button>
  </div>
 </div>
 
-<div className="mb-4 d-flex gap-2">
-  <button onClick={() => setSeleccionadas([...seleccionadas, ...disponibles]) || setDisponibles([])} className="btn btn-success">Agregar Todas las características</button>
-  <button onClick={() => setDisponibles([...disponibles, ...seleccionadas]) || setSeleccionadas([])} className="btn btn-danger">Eliminar Todas las características</button>
+
+<div className="mb-3">
+  <label className="form-label">Seleccionar proveedor</label>
+  <select
+    className="form-select"
+    value={seleccionado}
+    onChange={(e) => setSeleccionado(e.target.value)}
+  >
+    <option value="">Seleccione un proveedor...</option>
+    {listaProveedores.map(p => (
+      <option key={p.id} value={p.id}>{p.nombre}</option>
+    ))}
+  </select>
 </div>
+
+
+
+<div className="mb-4 d-flex gap-2">
+ </div>
+
       <div className="bg-white p-3 border rounded mb-4">
         <h5 className="mb-3">Características seleccionadas</h5>
         <div className="row g-3">
           {seleccionadas.map((c) => renderCampo(c, false, true))}
         </div>
       </div>
-      
-      <button onClick={handleBuscar} className="btn btn-primary mb-4">BUSCAR</button>
 
-      <div className="bg-light p-3 border rounded mb-4">
-        <h5 className="mb-3">Características disponibles</h5>
-        <div className="row g-3">
-          {disponibles.map((c) => renderCampo(c, true, false))}
-        </div>
-      </div>
+      <button onClick={handleGuardar} className="btn btn-primary mb-4">GUARDAR</button>
 
       
 
-      {mostrarPopup && resultado?.maximos?.length > 0 && (
+      {mostrarPopup && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content" style={{maxHeight: '500px', overflowY: 'auto'}}>
@@ -233,32 +234,10 @@ const BusquedaProveedor = () => {
               </div>
               <div className="modal-body">
                 <p>
-                  El Proveedor con más similitud a los parámetros introducidos es: <strong>{resultado.maximos[0].proveedor}</strong> del Plan <strong>{resultado.maximos[0].plan}</strong>, con un máximo de <strong>{resultado.maximos[0].similitud.toFixed(2)}</strong> puntos sobre <strong>{resultado.totalPesoConfigurado.toFixed(2)}</strong>.
+                  {resultado}
                 </p>
               </div>
-              {resultado && resultado.resultados.length > 0 && (
-                  <div className="mt-4 table-responsive">
-                    <h5 className="text-center">Tabla de Resultados</h5>
-                    <table className="table table-bordered table-striped mx-auto w-auto">
-                      <thead>
-                        <tr>
-                          <th>Proveedor</th>
-                          <th>Plan</th>
-                          <th>Similitud</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {resultado.resultados.map((r) => (
-                          <tr key={`${r.proveedor}-${r.plan}`}>
-                            <td>{r.proveedor}</td>
-                            <td>{r.plan}</td>
-                            <td>{r.similitud.toFixed(2)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+            
               
               <div className="modal-footer">
                 <button type="button" className="btn btn-danger" onClick={cerrarPopup}>Cerrar</button>
@@ -273,4 +252,4 @@ const BusquedaProveedor = () => {
   );
 };
 
-export default BusquedaProveedor;
+export default NuevoProveedor;
