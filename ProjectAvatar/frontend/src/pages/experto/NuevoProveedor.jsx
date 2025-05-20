@@ -234,11 +234,11 @@ const NuevoProveedor = () => {
     
     <div className="container py-4">
 
-     
+
 
       <div className="d-flex justify-content-between align-items-center mb-3">
   <h2 className="h4 mb-0">Edición de Proveedores</h2>
-     <button className="btn btn-secondary me-2" onClick={() => navigate('/proveedores')}>
+     <button className="btn btn-outline-secondary me-2" onClick={() => navigate('/proveedores')}>
     ← Volver
   </button>
   
@@ -269,7 +269,18 @@ const NuevoProveedor = () => {
       <span className="badge bg-success mb-3">Modo creación de nuevo proveedor</span>
     )}
   </div>
-  
+
+  <button
+    className="btn btn-outline-primary me-2"
+    onClick={() => {
+      setValores({});
+      setErrores([]);
+      setSeleccionado(""); // limpia el selector
+      setModoEdicion(false); // activa modo creación
+    }}
+  >
+    Nuevo Proveedor
+  </button>
 
 <div className="mb-4 d-flex gap-2 ">
  </div>

@@ -196,8 +196,8 @@ const BusquedaProveedor = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
   <h2 className="h4 mb-0">Buscar Proveedor Óptimo</h2>
   <div>
-    <button onClick={() => navigate('/proveedores/nuevo')} className="btn btn-outline-primary me-2">Añadir Proveedor</button>
-    <button onClick={() => navigate('/proveedores/editar')} className="btn btn-outline-secondary">Editar Proveedor</button>
+    <button onClick={() => navigate('/proveedores/nuevo')} className="btn btn-outline-primary me-2">Editar Proveedores</button>
+    <button onClick={() => navigate('/proveedores/pesos')} className="btn btn-outline-primary me-2">Editar Pesos</button>
  </div>
 </div>
 

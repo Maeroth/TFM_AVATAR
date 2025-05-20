@@ -1,4 +1,4 @@
-const CaractersticasTecnicas = require('../models/CaractersticasTecnicas');
+const CaractersticasTecnicas = require('../models/CaracteristicasTecnicas');
 const Proveedor = require('../models/Proveedor');
 const User = require('../models/Proveedor');
 
@@ -26,16 +26,21 @@ const obtenerMejorProveedor = async (req, res) => {
     const proveedores = await Proveedor.find({}, proyeccion).lean();
 
     // Hacer JOIN entre caracteristicas y pesos
-    const caracteristicas = await CaractersticasTecnicas.aggregate([{
-          $lookup: {
+    const caracteristicas = await CaractersticasTecnicas.aggregate([
+        {
+            $match: { caracteristica: { $in: camposSeleccionados } }
+        },
+        {
+            $lookup: {
             from: "pesos",
-            localField: "peso_id",
-            foreignField: "_id",
+            localField: "peso_id",       // ejemplo: "IMPORTANTISIMO"
+            foreignField: "_id",         // en pesos: "_id": "IMPORTANTISIMO"
             as: "peso"
+            }
+        },
+        {
+            $unwind: "$peso" // ahora ya sabemos que hay match
         }
-      },
-      { $unwind: "$peso" }, //convierte peso en un objeto plano para poder trabajar con el, por ejemplo: c.peso.valor
-      { $match: { caracteristica: { $in: camposSeleccionados } } } //filtramos para que traiga sólo los pesos de las características que hemos seleccionado por pantalla
     ]);
 
     // Mapeo de pesos por nombre de característica
