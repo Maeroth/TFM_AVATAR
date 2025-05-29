@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const SelectorAvatar = ({ onSeleccionarAvatar }) => {
+const SelectorAvatar = ({ onSeleccionarAvatar}) => {
   const [presentadores, setPresentadores] = useState([]);
   const [pagina, setPagina] = useState(1);
   const [busqueda, setBusqueda] = useState("");
@@ -9,7 +9,9 @@ const SelectorAvatar = ({ onSeleccionarAvatar }) => {
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/api/did/avatares`)
-      .then(res => setPresentadores(res.data.presenters || []))
+      .then(res =>{
+          setPresentadores(res.data.presenters || []);
+      })
       .catch(err => console.error("Error al cargar presentadores:", err));
   }, []);
 

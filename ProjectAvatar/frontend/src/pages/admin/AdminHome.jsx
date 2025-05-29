@@ -32,7 +32,7 @@ const AdminHome = () => {
         </button>
 
          <button
-            onClick={() => navigate("/admin/voz")}
+            onClick={() => navigate("/admin/gestionParametrosAvatarStream")}
             className="btn btn-primary btn-lg shadow"
         >
             Gestión de avatar en tiempo real

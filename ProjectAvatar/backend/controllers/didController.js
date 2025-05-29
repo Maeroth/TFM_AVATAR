@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const fs = require('fs');
 const Video = require('../models/Video');
+const AvatarStream = require('../models/AvatarStream');
 
 
 const DID_API_URL = process.env.DID_API_URL;
@@ -41,7 +42,7 @@ const obtenerAvatares = async (req, res) => {
 
 const obtenerVocesMicrosoft = async (req, res) => {
   try {
-    const response = await fetch("https://api.d-id.com/tts/voices?provider=microsoft", {
+    const response = await fetch(`${process.env.DID_API_URL}/tts/voices?provider=microsoft`, {
       method: "GET",
       headers: {
         accept: "application/json",
@@ -57,10 +58,15 @@ const obtenerVocesMicrosoft = async (req, res) => {
 
   const voices = await response.json();
 
-      const resultado = voices.map((v) => ({
-        id: v.id,
-        label: `${v.name}, ${v.gender} - (${v.languages?.[0]?.language || "Desconocido"})`
-      }));
+     //Las voces españolas aparecerán las primeras para facilitar la elección
+     const resultado = voices
+        .map((v) => ({
+          id: v.id,
+          label: `${v.name}, ${v.gender} - (${v.languages?.[0]?.language || "Desconocido"})`,
+          isSpanish: v.languages?.[0]?.language?.toLowerCase().includes("spanish") || false,
+        }))
+        .sort((a, b) => (a.isSpanish === b.isSpanish ? 0 : a.isSpanish ? -1 : 1))
+        .map(({ id, label }) => ({ id, label }));
 
       res.json(resultado);
     } catch (err) {
@@ -305,4 +311,101 @@ const crearAgente = async (req, res) => {
   }
 };
 
-module.exports = { obtenerAvatares, generarVideo, obtenerVocesMicrosoft, recibirWebhook, buscarVideos, crearAgente };
+const guardarAvatarStream = async (req, res) => {
+  
+    try {
+      const {
+        id_avatar_stream,
+        avatar_id,
+        voice_id,
+        saludo,
+        instrucciones
+      } = req.body;
+
+      
+
+    const body = {
+      presenter: {
+        type: "clip",
+        presenter_id: avatar_id,
+        voice:{
+          type: 'microsoft',
+          voice_id: voice_id
+        },
+        llm:{
+          provider: 'openai',
+          instructions: instrucciones
+        },
+        embed: 'false',
+        greetings: [saludo]
+      }
+    };
+
+      console.log("Body a enviar a D-ID:", JSON.stringify(body, null, 2));
+
+      const didRes = await axios.patch(
+        `${process.env.DID_API_URL}/agents/clips`,
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${process.env.DID_API_KEY}`
+          }
+        }
+      );
+      //Si todo ha ido bien, guardamos en base de datos
+      const data = await didRes.data;
+      
+       const actualizado = await AvatarStream.findOneAndUpdate(
+      { id_avatar: req.body.id_avatar_stream },   // busca por idAvatarStream
+        req.body,                            // aplica los cambios
+      { upsert: true, new: true }          // si no existe, lo crea
+      );
+    
+
+      res.json({ message: 'El avatar de stream ha sido correctamente actualizado'});
+
+    } catch (error) {
+        console.error("Error generando video:", error);
+        res.status(500).json({ error: "Error al guardar el vatar de stream: "+error.message });
+    } 
+
+};
+
+const cargarAvatarStream = async (req, res) => {
+  
+  try{
+      //Obtenemos el único registro que hay en base de datos
+      const avatarStream = await AvatarStream.findOne();
+
+      //Buscamos el id del avatar elegido para las presentaciones
+      const didRes = await axios.get(
+        `${process.env.DID_API_URL}/clips/presenters/${avatarStream.presentador.presenter_id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${process.env.DID_API_KEY}`
+          }
+        }
+      );
+    const actor = didRes.data.presenters?.[0];
+     if (!actor) {
+      return res.status(404).json({ error: "No se encontró presentador en la API de D-ID." });
+    }
+      // 4. Combinar con la información local y enviar como respuesta
+      res.json({
+        ...avatarStream.toObject(),
+        actor: actor
+      });
+   
+
+    } catch (error) {
+        console.error("Error generando video:", error);
+        res.status(500).json({ error: "Error al guardar el vatar de stream: "+error.message });
+    } 
+
+};
+
+
+
+module.exports = { obtenerAvatares, generarVideo, obtenerVocesMicrosoft, recibirWebhook, buscarVideos, crearAgente, guardarAvatarStream, cargarAvatarStream };
