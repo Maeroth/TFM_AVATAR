@@ -66,10 +66,10 @@ const NuevoProveedor = () => {
 
       if (modoEdicion && seleccionado) {
         // Modo edición: actualizamos proveedor existente
-        response = await axios.put(`http://localhost:5000/api/proveedores/editar/${seleccionado}`, criterios);
+        response = await axios.put(`${import.meta.env.VITE_API_URL}/api/proveedores/editar/${seleccionado}`, criterios);
       } else {
         // Modo creación: guardamos uno nuevo
-        response = await axios.post("http://localhost:5000/api/proveedores/crear", criterios);
+        response = await axios.post(`${import.meta.env.VITE_API_URL}/api/proveedores/crear`, criterios);
       }
 
       console.log("Resultado:", response.data);

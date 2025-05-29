@@ -1,0 +1,14 @@
+[{
+  "_id": {
+    "$oid": "6825b71393cdb40e04f41b85"
+  },
+  "password": "$2a$12$ceM4Bw7oZmSipIGww3zjD.bA5kzmukzbYw0nZzS4RPcjhEQIHcKdO",
+  "usuario": "admin"
+},
+{
+  "_id": {
+    "$oid": "6828a5b6df581e60147bcd66"
+  },
+  "password": "$2a$12$dGlLyLIuCSaNBadYMUp.neEd4S2ZxMS9rkqTdhUz4yrfKYvqva4eS",
+  "usuario": "experto"
+}]

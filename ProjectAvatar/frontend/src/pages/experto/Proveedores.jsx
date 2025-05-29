@@ -96,7 +96,7 @@ const BusquedaProveedor = () => {
 
     if(camposVacios.length == 0){ //Si no hay campos vacíos, mandamos la petición al servidor
         try {
-          const response = await axios.post("http://localhost:5000/api/proveedores/mejorProveedor", criterios);
+          const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/proveedores/mejorProveedor`, criterios);
           console.log("Resultado:", response.data);
           setResultado(response.data);
           setMostrarPopup(true);

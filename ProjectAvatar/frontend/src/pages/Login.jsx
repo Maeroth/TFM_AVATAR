@@ -21,7 +21,7 @@ export default function Login() {
 
     try {
       // Envía los datos al backend con axios (usuario y contraseña)
-      const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
+      const respuesta = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         usuario,
         password,
       });
@@ -31,7 +31,7 @@ export default function Login() {
       
       // Redirigir según el nombre de usuario
       if (usuario.toLowerCase() === 'admin') {
-        navigate('/parametros');
+        navigate('/admin');
       } else if (usuario.toLowerCase() === 'experto') {
         navigate('/proveedores');
       } else {

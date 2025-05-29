@@ -13,12 +13,12 @@ const Pesos = () => {
   // Carga inicial
   useEffect(() => {
     // Traer pesos
-    axios.get("http://localhost:5000/api/pesos")
+    axios.get(`${import.meta.env.VITE_API_URL}/api/pesos`)
       .then(res => setPesos(res.data))
       .catch(err => console.error("Error cargando pesos:", err));
 
     // Traer características con nombre del peso ya asociado
-    axios.get("http://localhost:5000/api/caracteristicas")
+    axios.get(`${import.meta.env.VITE_API_URL}/api/caracteristicas`)
       .then(res => {
         setCaracteristicas(res.data);
         const inicial = {};
@@ -39,7 +39,7 @@ const Pesos = () => {
   const guardarCambios = async () => {
     let response;
     try {
-      response = await axios.post("http://localhost:5000/api/caracteristicas/actualizar", asignaciones);
+      response = await axios.post(`${import.meta.env.VITE_API_URL}/api/caracteristicas/actualizar`, asignaciones);
       setMensaje(response.data.message || "Datos actualizados correctamente");
       setMostrarModal(true); // Mostrar el modal
     } catch (err) {
@@ -89,7 +89,11 @@ const Pesos = () => {
         <button onClick={guardarCambios} className="btn btn-primary">Guardar Cambios</button>
       </div>
 
-
+{mensaje && (
+  <div className="alert alert-success">
+    {mensaje}
+  </div>
+)}
       {mostrarModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">

@@ -6,6 +6,7 @@ const login = async (req, res) => {
   const { usuario, password } = req.body;
 
   try {
+    console.log('Usuario que entra: '+usuario);
     const user = await User.findOne({ usuario });
     if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 

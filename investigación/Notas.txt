@@ -1,0 +1,14 @@
+Levantar servidor: node server.js
+Levantar frontend: npm run dev
+
+ngrok: ngrok config add-authtoken 2xSRI83a3a3YmbXh8KQmOtEN2ET_SfABoktRWXn5M8ygNqgC
+->	ngrok http 5000
+-> docker-compose up --build -d
+
+
+docker compose down -v
+
+
+Frontend: https://avatar-frontend-afyu.onrender.com
+Backend: https://avatar-backend-6uaw.onrender.com
+MongoDB: mongodb+srv://maelgard:Apocal1ps1s666@cluster0.3pkrih.mongodb.net/AvatarDB

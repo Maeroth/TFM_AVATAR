@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      tags:
+        - shirohara/avatar:frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      tags:
+        - shirohara/avatar:backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/AvatarDB?ssl=false
+    depends_on:
+      - mongo
+
+  mongo:
+    build:
+      context: ./mongo-custom
+      tags:
+        - shirohara/avatar:mongo-custom
+    container_name: mongo
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo-data:
