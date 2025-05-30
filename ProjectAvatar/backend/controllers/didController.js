@@ -2,7 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const fs = require('fs');
 const Video = require('../models/Video');
-const AvatarStream = require('../models/AvatarStream');
+const AvatarStreams = require('../models/AvatarStreams');
 
 
 const DID_API_URL = process.env.DID_API_URL;
@@ -331,20 +331,20 @@ const guardarAvatarStream = async (req, res) => {
         voice:{
           type: 'microsoft',
           voice_id: voice_id
+          }
         },
         llm:{
           provider: 'openai',
           instructions: instrucciones
         },
-        embed: 'false',
+        embed: 'true',
         greetings: [saludo]
-      }
     };
 
       console.log("Body a enviar a D-ID:", JSON.stringify(body, null, 2));
 
       const didRes = await axios.patch(
-        `${process.env.DID_API_URL}/agents/clips`,
+        `${process.env.DID_API_URL}/agents/${id_avatar_stream}`,
         body,
         {
           headers: {
@@ -356,18 +356,28 @@ const guardarAvatarStream = async (req, res) => {
       //Si todo ha ido bien, guardamos en base de datos
       const data = await didRes.data;
       
-       const actualizado = await AvatarStream.findOneAndUpdate(
-      { id_avatar: req.body.id_avatar_stream },   // busca por idAvatarStream
-        req.body,                            // aplica los cambios
+       const actualizado = await AvatarStreams.findOneAndUpdate(
+      { id_avatar: id_avatar_stream },   // busca por idAvatarStream
+      { saludo: saludo,
+        instrucciones: instrucciones,
+        presentador:{
+          voice_id: voice_id,
+          presenter_id: avatar_id
+        }
+      },
       { upsert: true, new: true }          // si no existe, lo crea
       );
     
+      if(!actualizado){
+        console.error("Error al guardar el avatar de stream:", error);
+        res.status(500).json({ error: "Error al guardar el avatar de stream: "+error.message });
+      }
 
-      res.json({ message: 'El avatar de stream ha sido correctamente actualizado'});
+      res.json({ message: 'El avatar de streaming ha sido correctamente actualizado.'});
 
     } catch (error) {
-        console.error("Error generando video:", error);
-        res.status(500).json({ error: "Error al guardar el vatar de stream: "+error.message });
+        console.error("Error al guardar el avatar de stream:", error);
+        res.status(500).json({ error: "Error al guardar el avatar de stream: "+error.message });
     } 
 
 };
@@ -376,7 +386,7 @@ const cargarAvatarStream = async (req, res) => {
   
   try{
       //Obtenemos el único registro que hay en base de datos
-      const avatarStream = await AvatarStream.findOne();
+      const avatarStream = await AvatarStreams.findOne();
 
       //Buscamos el id del avatar elegido para las presentaciones
       const didRes = await axios.get(

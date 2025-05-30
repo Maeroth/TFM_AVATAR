@@ -1,0 +1,12 @@
+[{
+  "_id": {
+    "$oid": "68386920015f3d423bddbd55"
+  },
+  "id_avatar": "agt_4nQCuIu7",
+  "saludo": "Hola, soy yo",
+  "instrucciones": "Habla de videojuegos",
+  "presentador": {
+    "voice_id": "es-ES-AbrilNeural",
+    "presenter_id": "v2_public_amy@seiu0o2gby"
+  }
+}]

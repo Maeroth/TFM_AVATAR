@@ -8,6 +8,7 @@ import GenerarVideo from "./pages/admin/GenerarVideo";
 import SeleccionarAvatar from "./pages/admin/SeleccionarAvatar.jsx";
 import GestionVideos from "./pages/admin/GestionVideos.jsx";
 import GestionParametrosAvatarStream from "./pages/admin/GestionParametrosAvatarStream.jsx";
+import ConexionAvatarStream from "./pages/externo/ConexionAvatarStream.jsx";
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
       <Route path="/admin/avatar" element={<SeleccionarAvatar />} />
       <Route path="/admin/gestionVideos" element={<GestionVideos />} />
       <Route path="/admin/gestionParametrosAvatarStream" element={<GestionParametrosAvatarStream />} />
+      <Route path="/conexionStream" element={<ConexionAvatarStream />} />
     </Routes>
   );
 }

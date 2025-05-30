@@ -27,4 +27,4 @@ const AvatarSchema = new mongoose.Schema({
 });
 
 //module.exports = mongoose.model("avatar_stream", AvatarSchema);
-module.exports = mongoose.model("AvatarStream", AvatarSchema, "avatar_stream");
+module.exports = mongoose.model("avatar_streams", AvatarSchema);
