@@ -1,7 +1,6 @@
 
 // CSS import
 import './style.css'
-//import './webSpeechAPI.js'
 
 
 // 1. Import the Agents SDK library
@@ -16,12 +15,12 @@ let auth = { type: 'key', clientKey: "Z29vZ2xlLW9hdXRoMnwxMDIxNzU1MTk4NTU3NjQ0MT
 // HTML Variables declaration
 let videoElement = document.querySelector("#videoElement")
 let textArea = document.querySelector("#textArea")
-let langSelect = document.querySelector("#langSelect")
-let speechButton = document.querySelector("#speechButton");
+//let langSelect = document.querySelector("#langSelect")
+//let speechButton = document.querySelector("#speechButton");
 let answers = document.querySelector("#answers")
 let connectionLabel = document.querySelector("#connectionLabel")
 let chatButton = document.querySelector('#chatButton')
-let speakButton = document.querySelector('#speakButton')
+//let speakButton = document.querySelector('#speakButton')
 let reconnectButton = document.querySelector('#reconnectButton')
 let srcObject
 
@@ -51,9 +50,9 @@ const callbacks = {
             // Setting the 'Enter' Key to Send a message
             textArea.addEventListener('keypress', (event) => { if (event.key === "Enter") { event.preventDefault(); chat() } })
             chatButton.removeAttribute("disabled")
-            speakButton.removeAttribute("disabled")
-            langSelect.removeAttribute("disabled")
-            speechButton.removeAttribute("disabled")
+            //speakButton.removeAttribute("disabled")
+            //langSelect.removeAttribute("disabled")
+            //speechButton.removeAttribute("disabled")
             connectionLabel.innerHTML = "Online"
 
             if(agentManager.agent.greetings?.[0] ){
@@ -67,9 +66,9 @@ const callbacks = {
             document.querySelector("#hidden").style.display = "block"
             document.querySelector("#container").style.display = "none"
             chatButton.setAttribute("disabled", true)
-            speakButton.setAttribute("disabled", true)
-            langSelect.setAttribute("disabled", true)
-            speechButton.setAttribute("disabled", true)
+            //speakButton.setAttribute("disabled", true)
+            //langSelect.setAttribute("disabled", true)
+            //speechButton.setAttribute("disabled", true)
             connectionLabel.innerHTML = ""
         }
     },
@@ -195,23 +194,24 @@ if (agentId == "" || auth.clientKey == "") {
 
 // Event Listeners for Agent's built-in methods
 chatButton.addEventListener('click', () => chat())
-speakButton.addEventListener('click', () => speak())
+//speakButton.addEventListener('click', () => speak())
 reconnectButton.addEventListener('click', () => reconnect())
-speechButton.addEventListener('click', () => toggleStartStop())
+//speechButton.addEventListener('click', () => toggleStartStop())
 
 // Focus on input and button disabling when loading
 window.addEventListener('load', () => {
     textArea.focus(),
         chatButton.setAttribute("disabled", true)
-    speakButton.setAttribute("disabled", true)
-    langSelect.setAttribute("disabled", true)
-    speechButton.setAttribute("disabled", true)
+    //speakButton.setAttribute("disabled", true)
+    //langSelect.setAttribute("disabled", true)
+    //speechButton.setAttribute("disabled", true)
 })
 
 
 // *** Finally ***
 // 6. Create the 'agentManager' instance with the values created in previous steps
 let agentManager = await sdk.createAgentManager(agentId, { auth, callbacks, streamOptions });
+//let agentManager = "";
 
 console.log("sdk.createAgentManager()", agentManager)
 

@@ -318,6 +318,7 @@ const guardarAvatarStream = async (req, res) => {
         id_avatar_stream,
         avatar_id,
         voice_id,
+        idioma,
         saludo,
         instrucciones
       } = req.body;
@@ -335,7 +336,7 @@ const guardarAvatarStream = async (req, res) => {
         },
         llm:{
           provider: 'openai',
-          instructions: instrucciones
+          instructions: "Importante, debes responder en este idioma específicamente: "+idioma+". "+instrucciones
         },
         embed: 'true',
         greetings: [saludo]

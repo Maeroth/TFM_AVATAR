@@ -56,10 +56,18 @@ const GestionParametrosAvatarStream = () => {
   const handleGuardar = async () => {
   try {
     setGuardando(true); // Mostrar spinner en botón
+
+    //buscamos el label de la voz para obtener el idioma elegido
+    //por ejemplo, si hemos elegido: "Alvaro, male - (Spanish (Spain))"; -> Quiero la cadena: (Spanish (Spain))
+    const vozCompleta = voces.find(v => v.id === vozSeleccionada);
+    const match = vozCompleta.label.match(/\((.*)\)$/);
+    const idioma = match ? match[1] : "";
+
    const datos = {
       id_avatar_stream: idAvatarStreaming,
       avatar_id: avatar.presenter_id || avatar.id,
       voice_id: vozSeleccionada,
+      idioma: idioma,
       saludo,
       instrucciones
     };
