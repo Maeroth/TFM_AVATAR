@@ -79,6 +79,18 @@ export default function Login() {
         {/* Botón para enviar el formulario */}
         <button type="submit" className="btn btn-primary">Entrar</button>
       </form>
+
+      <div className="mt-4 text-center">
+        <button
+          type="button"
+          className="btn btn-warning btn-lg fw-bold"
+          onClick={() => navigate('/conexionStream')}
+        >
+          ¿Necesitas asesoramiento?
+        </button>
+      </div>
     </div>
+
+    
   );
 }

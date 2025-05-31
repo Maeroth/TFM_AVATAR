@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 
 const colores = [
   "#ffffff", "#f8f9fa", "#47ffff", "#ffb347",
@@ -6,10 +7,15 @@ const colores = [
   "#90ee90", "#ffa07a"
 ];
 
+
 const SelectorFondo = ({ onSeleccionarFondo }) => {
   const [tipo, setTipo] = useState("color");
   const [color, setColor] = useState("#ffffff");
   const [file, setFile] = useState(null);
+
+  useEffect(() => {
+    onSeleccionarFondo({ tipo: "color", valor: "#ffffff" });
+  }, [onSeleccionarFondo]);
 
   const handleColorChange = (colorSeleccionado) => {
     setColor(colorSeleccionado);

@@ -63,99 +63,100 @@ const handleGenerarVideo = async () => {
     setAlerta({ tipo: "success", mensaje: response.data.message });
 
   } catch (error) {
-    console.error("Error generando vídeo:", error);
-    setAlerta({ tipo: "danger", mensaje: "Hubo un error al generar el vídeo: "+error });
+    console.error("Error generando vídeo:", error.response.data.error);
+    setAlerta({ tipo: "danger", mensaje: "Hubo un error al generar el vídeo: "+error.response.data.error });
   }
 };
   
 
   return (
-    <div className="container py-4">
-      <h2 className="mb-4">Generación de Vídeo</h2>
-    
+   <div className="container animar-entrada d-flex justify-content-center">
+  <div className="w-100" style={{ maxWidth: "720px" }}>
+    <h2 className="mb-4 text-center">Generación de Vídeo</h2>
+
     {alerta && (
       <div className={`alert alert-${alerta.tipo} mt-3`}>
         {alerta.mensaje}
       </div>
     )}
+
+    {/* Campo: Título */}
     <div className="mb-3">
-            <label className="form-label fw-semibold">Título del vídeo <span className="text-danger">*</span></label>
-            <input
-              type="text"
-              className="form-control"
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-              required
-              placeholder="Introduce un título para el vídeo"
-            />
-          </div>
+      <label className="form-label fw-semibold">
+        Título del vídeo <span className="text-danger">*</span>
+      </label>
+      <input
+        type="text"
+        className="form-control"
+        value={titulo}
+        onChange={(e) => setTitulo(e.target.value)}
+        required
+        placeholder="Introduce un título para el vídeo"
+      />
+    </div>
 
-          {/* Descripción */}
-          <div className="mb-4">
-            <label className="form-label fw-semibold">Descripción (opcional)</label>
-            <textarea
-              className="form-control"
-              rows="3"
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              placeholder="Breve descripción del vídeo..."
-            />
-          </div>
-
-      {/* Resumen avatar + botón */}
+    {/* Campo: Descripción */}
     <div className="mb-4">
-  {avatar ? (
-    <div className="border rounded p-3 bg-light d-flex align-items-center justify-content-between">
-      <div className="d-flex align-items-center gap-3">
-        <img
-          src={avatar.thumbnail}
-          alt={avatar.name}
-          style={{
-            width: "50px",
-            height: "50px",
-            borderRadius: "5px",
-            objectFit: "cover"
-          }}
-        />
-        <strong className="text-capitalize">{avatar.name}</strong>
-        <input type="hidden" name="avatarId" value={avatar.id} />
-      </div>
-
-      <button
-        className="btn btn-outline-primary btn-sm"
-        onClick={() => setMostrarSelector(true)}
-      >
-        Cambiar Avatar
-      </button>
+      <label className="form-label fw-semibold">Descripción (opcional)</label>
+      <textarea
+        className="form-control"
+        rows="3"
+        value={descripcion}
+        onChange={(e) => setDescripcion(e.target.value)}
+        placeholder="Breve descripción del vídeo..."
+      />
     </div>
-  ) : (
-    <div className="d-flex justify-content-center">
-      <button
-        className="btn btn-primary"
-        onClick={() => setMostrarSelector(true)}
-      >
-        Elegir Avatar
-      </button>
-    </div>
-  )}
-</div>
 
-      {/* Selector completo (se abre aparte) */}
-      {mostrarSelector && (
-        <SelectorAvatar
-          onSeleccionarAvatar={(avatarElegido) => {
-            setAvatar(avatarElegido);
-            setMostrarSelector(false);
-          }}
-        />
+    {/* Selector de Avatar */}
+    <div className="mb-4">
+      {avatar ? (
+        <div className="border rounded p-3 bg-light d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center gap-3">
+            <img
+              src={avatar.thumbnail}
+              alt={avatar.name}
+              style={{
+                width: "50px",
+                height: "50px",
+                borderRadius: "5px",
+                objectFit: "cover"
+              }}
+            />
+            <strong className="text-capitalize">{avatar.name}</strong>
+            <input type="hidden" name="avatarId" value={avatar.id} />
+          </div>
+          <button
+            className="btn btn-outline-primary btn-sm"
+            onClick={() => setMostrarSelector(true)}
+          >
+            Cambiar Avatar
+          </button>
+        </div>
+      ) : (
+        <div className="text-center">
+          <button
+            className="btn btn-primary"
+            onClick={() => setMostrarSelector(true)}
+          >
+            Elegir Avatar
+          </button>
+        </div>
       )}
+    </div>
 
-      {/* Editor de guion */}
-      <EditorGuion onChangeGuion={setGuion} />
+    {mostrarSelector && (
+      <SelectorAvatar
+        onSeleccionarAvatar={(avatarElegido) => {
+          setAvatar(avatarElegido);
+          setMostrarSelector(false);
+        }}
+      />
+    )}
 
-      {/* Editor de Fondo */}
-      <SelectorFondo onSeleccionarFondo={(data) => setFondo(data)} />
+    <EditorGuion onChangeGuion={setGuion} />
+    <SelectorFondo onSeleccionarFondo={(data) => setFondo(data)} />
 
+    <div className="text-center">
       <button
         className="btn btn-success mt-4"
         onClick={handleGenerarVideo}
@@ -164,7 +165,8 @@ const handleGenerarVideo = async () => {
         🎬 Generar Vídeo
       </button>
     </div>
-    
+  </div>
+</div>  
   );
 };
 

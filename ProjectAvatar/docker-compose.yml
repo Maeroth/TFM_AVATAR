@@ -20,17 +20,6 @@ services:
       - "5000:5000"
     environment:
       - MONGO_URI=mongodb://mongo:27017/AvatarDB?ssl=false
-    depends_on:
-      - mongo
-
-  mongo:
-    build:
-      context: ./mongo-custom
-      tags:
-        - shirohara/avatar:mongo-custom
-    container_name: mongo
-    ports:
-      - "27017:27017"
 
 volumes:
   mongo-data:

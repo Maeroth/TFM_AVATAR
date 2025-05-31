@@ -12,6 +12,8 @@ let agentId = "agt_4nQCuIu7"
 // 3. Paste the 'data-client-key' in the 'auth.clientKey' variable
 let auth = { type: 'key', clientKey: "Z29vZ2xlLW9hdXRoMnwxMDIxNzU1MTk4NTU3NjQ0MTM5ODU6ckpwOGpiOFFyTld4SEJwVXNLRUlu" };
 
+let agentManager; // Declaración global del controlador del agente
+
 // HTML Variables declaration
 let videoElement = document.querySelector("#videoElement")
 let textArea = document.querySelector("#textArea")
@@ -207,10 +209,10 @@ window.addEventListener('load', () => {
     //speechButton.setAttribute("disabled", true)
 })
 
-
+async function iniciarAgente(){
 // *** Finally ***
 // 6. Create the 'agentManager' instance with the values created in previous steps
-let agentManager = await sdk.createAgentManager(agentId, { auth, callbacks, streamOptions });
+agentManager = await sdk.createAgentManager(agentId, { auth, callbacks, streamOptions });
 //let agentManager = "";
 
 console.log("sdk.createAgentManager()", agentManager)
@@ -227,3 +229,7 @@ console.log("agentManager.connect()")
 agentManager.connect()
 
 // Happy Coding! 
+
+}
+
+iniciarAgente();

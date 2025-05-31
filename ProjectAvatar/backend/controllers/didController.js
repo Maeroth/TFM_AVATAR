@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const fs = require('fs');
 const Video = require('../models/Video');
+const Avatars = require('../models/Avatars');
 const AvatarStreams = require('../models/AvatarStreams');
 
 
@@ -199,14 +200,69 @@ const generarVideo = async (req, res) => {
       res.json({ message: 'Petición de vídeo realizada correctamente. Cuando esté listo aparecerá en la Gestión de Vídeos'});
 
     } catch (error) {
+      if(error.response.data){
+        console.error("Error generando video:", error.response.data.description);
+        res.status(500).json({ error: error.response.data.description });
+      }else{
         console.error("Error generando video:", error);
-        res.status(500).json({ error: "Error al generar el video: "+error.message });
+        res.status(500).json({ error: error.message });
+      }
     } 
 
 };
 
 const recibirWebhook = async (req, res) => {
   console.log("🎯 Webhook recibido:", JSON.stringify(req.body, null, 2));
+
+  try{
+  
+    //obtenermos la petición devuelta por did
+    const { id, status, result_url } = req.body;
+
+    if(!id){
+       return res.status(400).send("ID de petición D-ID no proporcionado en el Webhook");
+    }
+    
+    const video = await Video.findOneAndUpdate(
+        {id_peticion_did: id},
+        {
+        estado_peticion_did: status,
+        ...(status === 'done' && {
+          url: result_url,
+          fecha_respuesta_did: new Date()
+        })
+      },
+      {new: true}
+    );
+  
+    if (!video) {
+      console.warn(`⚠️ No se encontró video con id_peticion_did: ${id_peticion_did}`);
+      return res.status(404).send("Video no encontrado");
+    }
+
+   // Borrar archivos temporales del servidor
+    const archivos = [video.ruta_fisica_audio, video.ruta_fisica_imagen];
+    archivos.forEach((url) => {
+      if (url) {
+        const localPath = url.replace(process.env.PUBLIC_URL, '.');
+        fs.unlink(localPath, (err) => {
+          if (err) console.error(`⚠️ Error al eliminar archivo ${localPath}:`, err);
+          else console.log(`🧹 Archivo eliminado: ${localPath}`);
+        });
+      } 
+    });
+
+    res.status(200).send("OK");
+
+  }catch(error){
+    console.error("❌ Error en recibirWebhook:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+    
+};
+
+const recibirWebhookCrearAvatar = async (req, res) => {
+  console.log("🎯 Webhook recibido de la creación del avatar:", JSON.stringify(req.body, null, 2));
 
   try{
   
@@ -342,7 +398,7 @@ const guardarAvatarStream = async (req, res) => {
         greetings: [saludo]
     };
 
-      console.log("Body a enviar a D-ID:", JSON.stringify(body, null, 2));
+      console.info("Body a enviar a D-ID:", JSON.stringify(body, null, 2));
 
       const didRes = await axios.patch(
         `${process.env.DID_API_URL}/agents/${id_avatar_stream}`,
@@ -417,6 +473,112 @@ const cargarAvatarStream = async (req, res) => {
 
 };
 
+const crearAvatar = async (req, res) => {
+  try {
+    const videoFile = req.files?.video?.[0].path;
+    const { nombre, genero } = req.body;
+
+    if (!videoFile || !nombre || !genero) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    }
+
+    //Antes de nada, vemos si existe ya un avatar en base de datos
+     const avatarActual = await Avatars.findOne();
+     if(avatarActual){ //Eliminamos el avatar actual de D-ID y de base de datos
+      try{
+          console.info(`Llamada a ${process.env.DID_API_URL}/clips/presenters/${avatarActual.id_avatar}`);
+          const didRes = await axios.delete(
+              `${process.env.DID_API_URL}/clips/presenters/${avatarActual.id_avatar}`,
+                {
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Basic ${process.env.DID_API_KEY}`
+                      }
+                }
+              );
+            }catch(error){
+            if(error.response.data){
+                    console.error("Error generando borrando Avatar de D-ID:", error.response.data.description);
+            }else{
+                    console.error("Error generando borrando Avatar de D-ID", error);
+                  }
+            }
+      //Borramos de base de datos
+        console.info("Borramos el avatar anterior de Base de datos");
+        const borrado = await Avatars.deleteOne({ id_avatar: avatarActual.id_avatar });
+     }
+
+    //Hacemos un consentimiento (dato necesario para la creación del avatar)
+      const body = {
+        language: "spanish"
+      } ;
+
+    console.info(`Llamada a ${process.env.DID_API_URL}/consents/`);
+    const didRes = await axios.post(
+        `${process.env.DID_API_URL}/consents/`,
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${process.env.DID_API_KEY}`
+          }
+        }
+      );
+      //recogemos didRes.data.id
+    
+    const id_consentimiento = didRes.data.id;
+      console.info("Hemos obtenido el id del consentimiento")
+
+    // Convertir rutas locales en URLs accesibles
+    const videoRelative = videoFile ? videoFile.split("uploads")[1] : null;
+
+    const video_url = videoRelative ? `${process.env.PUBLIC_URL}/upload${videoRelative.replace(/\\/g, '/')}` : null;
+
+     
+      body2 = {
+      gender: genero,
+      webhook: `${process.env.PUBLIC_URL}/api/did/webhookCrearAvatar`,        
+      config: {is_greenscreen: 'false'},
+      source_url: video_url,
+      name: nombre,
+      consent_id: id_consentimiento
+    };
+
+      console.log("Body a enviar a D-ID:", JSON.stringify(body2, null, 2));
+
+      console.info(`Llamada a ${process.env.DID_API_URL}/clips/avatars/`);
+      const didRes2 = await axios.post(
+        "https://api.d-id.com/clips/avatars",
+        body2,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${process.env.DID_API_KEY}`
+          }
+        }
+      );
+
+    const idNuevoAvatar = didRes2.data.id;
+    const status = didRes2.data.status;
+    console.info("Guardamos los datos del nuevo avatar en base de datos");
+    const avatarGuardar = await Avatars.create({
+      id_avatar: idNuevoAvatar,
+      ruta_video: video_url,
+      ruta_fisica_video: videoRelative?`uploads${videoRelative.replace(/\\/g, '/')}` : null,
+      status: status,
+      errores: ''
+      });
+
+    console.info("Guardado correcto de los datos del avatar");
+
+    return res.status(200).json({
+      message: "Avatar creado correctamente",
+    });
+  } catch (err) {
+    console.error("❌ Error al crear avatar:", err);
+    res.status(500).json({ error: "Error interno al crear el avatar" });
+    }
+  };
 
 
-module.exports = { obtenerAvatares, generarVideo, obtenerVocesMicrosoft, recibirWebhook, buscarVideos, crearAgente, guardarAvatarStream, cargarAvatarStream };
+module.exports = { obtenerAvatares, generarVideo, obtenerVocesMicrosoft, recibirWebhook, recibirWebhookCrearAvatar, buscarVideos, crearAgente, guardarAvatarStream, cargarAvatarStream, crearAvatar };
