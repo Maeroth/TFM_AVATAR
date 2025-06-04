@@ -1,23 +1,48 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const Layout = () => {
+  const navigate = useNavigate();
+
+  // Recuperamos el nombre de usuario desde el localStorage si está logueado
+  const usuario = localStorage.getItem('usuario');
+
+  // Función para cerrar sesión
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    navigate('/'); // Redirige al login
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
-
-      {/* Banda superior de ancho total */}
-      <header className="bg-dark text-white py-3 shadow" style={{ width: "100vw" }}>
-        <h1 className="text-center m-0">Plataforma de Avatares Virtuales</h1>
+      
+      {/* Banda superior */}
+      <header className="bg-dark text-white py-3 shadow d-flex justify-content-between align-items-center px-4" style={{ width: "100vw" }}>
+        <h1 className="m-0 text-center flex-grow-1">Plataforma de Gestión de Avatares Virtuales</h1>
+        
+        {/* Sección de usuario logueado */}
+        {usuario && (
+          <div className="d-flex align-items-center gap-3">
+            <span className="small mb-0">Usuario: <strong>{usuario}</strong></span>
+            <button
+              className="btn btn-outline-light px-4 py-1"
+              onClick={handleLogout}
+            >
+              Salir
+            </button>
+          </div>
+        )}
       </header>
 
-      {/* Contenido principal centrado */}
+      {/* Contenido principal */}
       <main className="flex-grow-1 py-4">
         <div className="container-sd">
           <Outlet />
         </div>
       </main>
 
-      {/* Banda inferior de ancho total */}
+      {/* Pie de página */}
       <footer className="bg-dark text-white text-center py-2 mt-auto" style={{ width: "100vw" }}>
         Proyecto TFM – {new Date().getFullYear()}
       </footer>

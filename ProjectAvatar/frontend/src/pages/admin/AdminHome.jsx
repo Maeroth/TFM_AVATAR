@@ -25,22 +25,17 @@ const AdminHome = () => {
   }, []);
 
   return (
-    <div
-      className="container animar-entrada d-flex flex-column align-items-center justify-content-center py-5"
-      style={{ minHeight: "80vh" }}
-    >
+    
+    <div className="d-flex animar-entrada flex-column align-items-center justify-content-start pt-5" style={{ minHeight: "80vh" }}>
       <div className="text-center border-bottom border-3 border-primary pb-3 mb-5">
-  <h2 className="fw-bold d-inline-flex align-items-center gap-2 text-primary">
-    <i className="bi bi-gear-fill"></i> {/* O cualquier icono de Bootstrap Icons */}
-    Panel de Administración
-  </h2>
-</div>
-
+        <h2 className="fw-bold d-inline-flex align-items-center gap-2 text-primary">
+          <i className="bi bi-gear-fill"></i> 
+            Panel de Administración
+        </h2>
+      </div>
 
       {/* Contenedor de botones administrativos con espacio vertical uniforme y ancho limitado */}
       <div className="d-flex flex-column gap-4 w-100" style={{ maxWidth: "400px" }}>
-
-        {/* Cada botón está envuelto en un div con tooltip contextual que explica su función */}
         
         {/* Botón: Crear vídeos con avatares virtuales a partir de texto o audio */}
         <div
