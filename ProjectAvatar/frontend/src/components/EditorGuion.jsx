@@ -44,11 +44,16 @@ const EditorGuion = ({ onChangeGuion }) => {
           <label className="form-label">Texto del guion <span className="text-danger">*</span></label>
           <textarea
             className="form-control"
+            maxLength={40000} // ← Límite de caracteres
             rows={4}
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
-            placeholder="Escribe aquí lo que debe decir el avatar..."
+            placeholder="Escribe aquí lo que debe decir el avatar... (máximo 40.000 caracteres)"
+            
           />
+          <small className="text-muted">
+            {texto.length} / 40.000 caracteres
+          </small>
           <SelectorVoz onSeleccionarVoz={(vozId) => setVoiceId(vozId)} />
         </div>
         

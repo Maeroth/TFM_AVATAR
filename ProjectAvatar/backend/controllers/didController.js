@@ -197,7 +197,7 @@ const generarVideo = async (req, res) => {
         tiene_subtitulos: subtitles === "true"
       });
 
-      res.json({ message: 'Petición de vídeo realizada correctamente. Cuando esté listo aparecerá en la Gestión de Vídeos'});
+      res.json({ message: 'Petición de vídeo realizada correctamente al proveedor. Cuando esté listo aparecerá en el menú de Gestión de Vídeos'});
 
     } catch (error) {
       if(error.response.data){
@@ -580,5 +580,22 @@ const crearAvatar = async (req, res) => {
     }
   };
 
+const borrarVideo = async (req, res) => {
+  const { id } = req.params;
 
-module.exports = { obtenerAvatares, generarVideo, obtenerVocesMicrosoft, recibirWebhook, recibirWebhookCrearAvatar, buscarVideos, crearAgente, guardarAvatarStream, cargarAvatarStream, crearAvatar };
+  try {
+    const resultado = await Video.findByIdAndDelete(id); 
+    if (!resultado) {
+      return res.status(404).json({ error: "Vídeo no encontrado" });
+    }
+
+    res.json({ message: "Vídeo borrado correctamente" });
+
+  } catch (error) {
+    console.error("Error al borrar el vídeo:", error);
+    res.status(500).json({ error: "Error al borrar el vídeo" });
+  }
+};
+
+
+module.exports = { obtenerAvatares, generarVideo, obtenerVocesMicrosoft, recibirWebhook, recibirWebhookCrearAvatar, buscarVideos, crearAgente, guardarAvatarStream, cargarAvatarStream, crearAvatar, borrarVideo };

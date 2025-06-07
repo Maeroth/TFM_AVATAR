@@ -15,7 +15,7 @@ const SelectorFondo = ({ onSeleccionarFondo }) => {
 
   useEffect(() => {
     onSeleccionarFondo({ tipo: "color", valor: "#ffffff" });
-  }, [onSeleccionarFondo]);
+  }, []);
 
   const handleColorChange = (colorSeleccionado) => {
     setColor(colorSeleccionado);
