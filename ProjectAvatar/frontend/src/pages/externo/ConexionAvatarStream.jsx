@@ -1,7 +1,10 @@
 import { useEffect } from "react";
+import { Tooltip } from "bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const ConexionAvatarStream = () => {
- 
+  const navigate = useNavigate();
+
   useEffect(() => {
     import("./main.js");
     const script = document.createElement("script");
@@ -10,50 +13,86 @@ const ConexionAvatarStream = () => {
   }, []);
 
   return (
-    <>
-      <div id="container">
-        <div className="header">
-          <span id="previewName">Tu agente</span>
-          <span id="connectionLabel">Connectando..</span>
+    <div className="container-fluid animar-entrada">
+      
+      <div
+        className="row justify-content-center"
+        style={{ maxWidth: "1400px" }}
+        id="container"
+      >
+        <div className="d-flex col-12 col-md-6 mb-4">
+        <button
+          className="btn btn-outline-secondary"
+          onClick={() => navigate("/")}
+        >
+          Volver
+        </button>
+      </div>
+        {/* Encabezado + vídeo */}
+        <div className="animar-entrada-izquierda col-12 col-md-6 mb-4">
+          <div className="bg-primary text-white px-4 py-3 rounded shadow mb-3 d-flex justify-content-between align-items-center">
+            <h5 id="previewName" className="mb-0 fw-bold"></h5>
+            <span id="connectionLabel" className="text-end small">Conectando...</span>
+          </div>
+
+          <div className="text-center">
+            <video
+              id="videoElement"
+              autoPlay
+              loop
+              className="rounded border shadow w-100"
+              style={{ height: "auto" }}
+            ></video>
+          </div>
         </div>
 
-        <div>
-          <video id="videoElement" autoPlay loop></video>
+        {/*Entrada, botón y respuestas */}
+        <div className="animar-entrada-derecha col-12 col-md-6 mb-4">
+          <div className="mb-3">
+            <label htmlFor="textArea" className="form-label fw-semibold">Escribe tu mensaje</label>
+            <textarea
+              id="textArea"
+              className="form-control"
+              rows="4"
+              placeholder="Escribe un mensaje para el asesor..."
+              autoFocus
+            ></textarea>
+          </div>
+
+          <div className="text-center mb-3">
+            <button
+              id="chatButton"
+              className="btn btn-primary"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="agentManager.chat() → Comunica con el agente"
+            >
+              Enviar
+            </button>
+          </div>
+
+
+          <div
+            id="answers"
+            className="border rounded p-3 bg-light"
+            style={{ minHeight: "200px", maxHeight: "300px", overflowY: "auto" }}
+          ></div>
         </div>
-
-        <div className="inputsDiv">
-          <textarea
-            id="textArea"
-            placeholder="Escribe un mensaje"
-            autoFocus
-          ></textarea>
-        </div>
-
-         <div>
-          <buttonG
-            id="chatButton"
-            title="agentManager.chat() -> Communicate with your Agent (D-ID LLM)"
-          >
-            Enviar
-          </buttonG>
-        </div>
-
-        
-
-        <div id="answers"></div>
       </div>
 
+      {/* Contenedor oculto para reconexión */}
       <div id="hidden" style={{ display: "none" }}>
         <h2 id="hidden_h2"></h2>
         <button
           id="reconnectButton"
-          title="agentManager.reconnect() -> Reconnects the previous WebRTC session"
+          className="btn btn-warning mt-3"
+          title="agentManager.reconnect() → Reconecta la sesión WebRTC previa"
         >
           Reconectar
         </button>
       </div>
-    </>
+    </div>
   );
-}
+};
 
 export default ConexionAvatarStream;

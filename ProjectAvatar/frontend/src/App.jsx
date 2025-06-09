@@ -11,7 +11,7 @@ import GestionVideos from "./pages/admin/GestionVideos.jsx";
 import GestionParametrosAvatarStream from "./pages/admin/GestionParametrosAvatarStream.jsx";
 import CrearAvatar from "./pages/admin/CrearAvatar.jsx";
 import ConexionAvatarStream from "./pages/externo/ConexionAvatarStream.jsx";
-import Security from './security/Security.jsx';
+import Security from './pages/security/Security.jsx';
 
 function App() {
   return (

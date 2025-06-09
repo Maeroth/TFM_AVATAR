@@ -1,16 +1,14 @@
-
 // CSS import
 import './style.css'
-
 
 // 1. Import the Agents SDK library
 import * as sdk from "@d-id/client-sdk"
 
 // 2. Paste the `data-agent-id' in the 'agentId' variable
-let agentId = "agt_4nQCuIu7"
+let agentId = `${import.meta.env.VITE_AGENT_ID}`
 
 // 3. Paste the 'data-client-key' in the 'auth.clientKey' variable
-let auth = { type: 'key', clientKey: "Z29vZ2xlLW9hdXRoMnwxMDIxNzU1MTk4NTU3NjQ0MTM5ODU6ckpwOGpiOFFyTld4SEJwVXNLRUlu" };
+let auth = { type: 'key', clientKey: `${import.meta.env.VITE_DID_KEY}` };
 
 let agentManager; // Declaración global del controlador del agente
 
@@ -58,7 +56,7 @@ const callbacks = {
             connectionLabel.innerHTML = "Online"
 
             if(agentManager.agent.greetings?.[0] ){
-                document.querySelector("#answers").innerHTML +=  `${timeDisplay()} - [assistant] : ${agentManager.agent.greetings[0]}  <br>`
+                document.querySelector("#answers").innerHTML +=  `${timeDisplay()} - [Asesor] : ${agentManager.agent.greetings[0]}  <br>`
                 }
         }
 
@@ -68,6 +66,7 @@ const callbacks = {
             document.querySelector("#hidden").style.display = "block"
             document.querySelector("#container").style.display = "none"
             chatButton.setAttribute("disabled", true)
+
             //speakButton.setAttribute("disabled", true)
             //langSelect.setAttribute("disabled", true)
             //speechButton.setAttribute("disabled", true)
@@ -102,14 +101,11 @@ const callbacks = {
         // Show Rating buttons only for the Agent's (assistant) full answers
         if (msg && msg.role == "assistant" && messages.length != 1) {
             if (type == "answer") {
-                answers.innerHTML += `${timeDisplay()} - [${msg.role}] : ${msg.content}  <button id='${msg.id}_plus' title='agentManager.rate() -> Rate this answer (+)'>+</button> <button id='${msg.id}_minus' title='agentManager.rate() -> Rate this answer (-)'>-</button> <br>`
-
-                document.getElementById(`${msg.id}_plus`).addEventListener('click', () => rate(msg.id, 1))
-                document.getElementById(`${msg.id}_minus`).addEventListener('click', () => rate(msg.id, -1))
+                answers.innerHTML += `${timeDisplay()} - ${msg.content} <br>`
             }
 
         } else if (!!msg) {
-            answers.innerHTML += `${timeDisplay()} - [${msg.role}] : ${msg.content}  <br>`
+            answers.innerHTML += `${timeDisplay()} - ${msg.content}  <br>`
         }
 
         // Auto-scroll to the last message 

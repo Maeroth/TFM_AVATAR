@@ -16,15 +16,25 @@ const Layout = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      
       {/* Banda superior */}
-      <header className="bg-dark text-white py-3 shadow d-flex justify-content-between align-items-center px-4" style={{ width: "100vw" }}>
-        <h1 className="m-0 text-center flex-grow-1">Plataforma de Gestión de Avatares Virtuales</h1>
-        
-        {/* Sección de usuario logueado */}
+      <header
+        className="bg-dark text-white py-3 shadow position-relative"
+        style={{ width: "100vw", height: "70px" }}
+      >
+        {/* Título centrado en pantalla */}
+        <h1
+          className="position-absolute top-50 start-50 translate-middle m-0 text-center"
+          style={{ fontSize: "2.5rem", whiteSpace: "nowrap" }}
+        >
+          Plataforma de Gestión de Avatares Virtuales
+        </h1>
+
+        {/* Usuario logueado en esquina superior derecha */}
         {usuario && (
-          <div className="d-flex align-items-center gap-3">
-            <span className="small mb-0">Usuario: <strong>{usuario}</strong></span>
+          <div className="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center gap-3 me-4">
+            <span className="small mb-0">
+              Usuario: <strong>{usuario}</strong>
+            </span>
             <button
               className="btn btn-outline-light px-4 py-1"
               onClick={handleLogout}
@@ -34,6 +44,7 @@ const Layout = () => {
           </div>
         )}
       </header>
+
 
       {/* Contenido principal */}
       <main className="flex-grow-1 py-4">

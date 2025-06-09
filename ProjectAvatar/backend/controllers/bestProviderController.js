@@ -2,140 +2,153 @@ const CaractersticasTecnicas = require('../models/CaracteristicasTecnicas');
 const Proveedor = require('../models/Proveedor');
 const User = require('../models/Proveedor');
 
+/**
+ * Este método calcula y devuelve una lista ordenada de proveedores,
+ * clasificados según su similitud con los criterios técnicos seleccionados por el usuario.
+ * También devuelve el proveedor/es con la mayor puntuación.
+ */
 const obtenerMejorProveedor = async (req, res) => {
+  // Obtenemos los criterios enviados desde el frontend (ej: precio, resolución, etc.)
   const criterios = req.body;
-  const camposSeleccionados = Object.keys(criterios);   //Guardamos los criterios seleccionados por pantalla
-  try {
-    let number = Math.max(0, 1 - ((30.71 - 12) / 30.71));
 
-    //La idea es buscar los proveedores con los criterios seleccionados, no traerse todos los criterios de BD
-// 1. Campos fijos que siempre deben ir. El 1 es que se activa esa caracteristica en la búsqueda
+  // Extraemos las claves (nombres de las características seleccionadas) para usarlas en la búsqueda
+  const camposSeleccionados = Object.keys(criterios);
+
+  try {
+    // Se define una proyección inicial con campos fijos que siempre se necesitan en la búsqueda
     const proyeccion = {
-        proveedor: 1,
-        plan: 1
+      proveedor: 1,
+      plan: 1
     };
 
-    // 2. Campos dinámicos que vienen del frontend
-    const criterios = req.body;
-        Object.keys(criterios).forEach(campo => {
-        proyeccion[campo] = 1;
+    // Se añaden dinámicamente a la proyección los campos enviados desde el frontend
+    Object.keys(criterios).forEach(campo => {
+      proyeccion[campo] = 1;
     });
-   // const proveedores = await Proveedor.find({}).select('proveedor:1 plan:1 precio:1');
 
-    // Traer todos los proveedores, pero solo con los campos Proveedor, Plan y los seleccionados por pantalla
+    // Buscamos todos los proveedores, pero solo con los campos seleccionados (para eficiencia)
     const proveedores = await Proveedor.find({}, proyeccion).lean();
 
-    // Hacer JOIN entre caracteristicas y pesos
+    // Consultamos las características técnicas seleccionadas, junto con su peso asociado
     const caracteristicas = await CaractersticasTecnicas.aggregate([
-        {
-            $match: { caracteristica: { $in: camposSeleccionados } }
-        },
-        {
-            $lookup: {
-            from: "pesos",
-            localField: "peso_id",       // ejemplo: "IMPORTANTISIMO"
-            foreignField: "_id",         // en pesos: "_id": "IMPORTANTISIMO"
-            as: "peso"
-            }
-        },
-        {
-            $unwind: "$peso" // ahora ya sabemos que hay match
+      {
+        $match: { caracteristica: { $in: camposSeleccionados } } // Solo características elegidas
+      },
+      {
+        $lookup: {
+          from: "pesos",                // Hacemos JOIN con la colección de pesos
+          localField: "peso_id",        // campo en CaracteristicasTecnicas
+          foreignField: "_id",          // campo en la colección de pesos
+          as: "peso"                    // el resultado del JOIN se almacena en un array llamado "peso"
         }
+      },
+      {
+        $unwind: "$peso" // Convertimos el array "peso" en un objeto individual por cada característica
+      }
     ]);
 
-    // Mapeo de pesos por nombre de característica
+    // Creamos un diccionario para mapear nombre de característica -> valor del peso
     const pesosMap = {};
     caracteristicas.forEach(c => {
       pesosMap[c.caracteristica] = c.peso.valor;
     });
 
-    //Comenzamos con la lógica de negocio
-    const resultados = []; // Aquí guardamos todos los resultados de los proveedores
+    // Inicializamos array para almacenar los resultados
+    const resultados = [];
+
+    // Recorremos cada proveedor para calcular su puntuación de similitud
     proveedores.forEach(proveedor => {
-        let similitudTotal = 0;
+      let similitudTotal = 0;
 
-        for(const campo in criterios){
-            const entrada = criterios[campo]; //obtenemos el valor de pantalla
-            const valor = proveedor[campo]; //obtenemos el valor del proveedor
-            let similitud = 0; //contendrá la similitudBase * peso
-            let similitudBase = 0; //contendrá la similitud de la característica según su entrada por pantalla y lo que ofrezca el proveedor
+      // Evaluamos cada criterio comparando el valor del proveedor vs valor introducido
+      for (const campo in criterios) {
+        const entrada = criterios[campo];      // Valor introducido por el usuario
+        const valor = proveedor[campo];        // Valor que tiene el proveedor
+        let similitud = 0;                     // Valor ponderado para ese campo
+        let similitudBase = 0;                 // Valor puro de similitud antes de ponderar
 
-            switch (campo){
-                case 'precio':
-                    if (valor == 0) {
-                        similitudBase = entrada == 0 ? 1 : 0; // si ambos son 0, similitud total, si no, 0, así evitamos indeterminación con la división
-                    } else {
-                        similitudBase = valor <= entrada ? 1 : Math.max(0, 1 - ((valor - entrada) / valor));
-                    }
-                    similitud = similitudBase * pesosMap[campo];
-                    break;
-                case 'minutos_de_video_mes':
-                case 'minutos_de_streaming_mes':
-                case 'duracion_maxima_video':
-                case 'numero_avatares':
-                case 'avatares_personales':
-                case 'numero_de_voces':
-                case 'idiomas_soportados':
-                    if(entrada == 0){
-                        similitudBase = valor == 0 ? 1 : 0; // si ambos son 0, similitud total, si no, 0, así evitamos indeterminación con la división
-                    } else{
-                        similitudBase = valor >= entrada ? 1 : Math.max(0, 1 - ((entrada - valor) / entrada));
-                    }
-                    similitud = similitudBase * pesosMap[campo];
-                    break;
-                case 'tiene_streaming':
-                case 'streaming_con_sdk':
-                case 'traduccion_automatica':
-                case 'clonado_de_voz':
-                case 'expresiones_del_avatar':
-                case 'licencia_comercial':
-                case 'entrada_alternativa':
-                    //Estas son del tipo SÍ o NO, simplemente deben coincidir
-                    similitudBase = entrada == valor ? 1 : 0;
-                    similitud = similitudBase * pesosMap[campo];
-                    break;
-                case 'resolucion_del_video':
-                    //resolución puede ser 720p, 1080p y 4K, lo importante aquí es que las opciones superiores vienen contenidas en la elección
-                    similitudBase = entrada <= valor ? 1 : 0; 
-                    similitud = similitudBase * pesosMap[campo];
-                case 'sincronizacion_labial':
-                case 'calidad_api':
-                case 'velocidad_de_generacion':
-                    //Estas son del tipo BAJO/NORMAL/ALTO
-                    similitudBase = entrada == valor ? 1 : 0;
-                    similitud = similitudBase * pesosMap[campo];
-                    break;
-                }
+        // Evaluamos según el tipo de campo
+        switch (campo) {
+          case 'precio':
+            if (valor == 0) {
+              similitudBase = entrada == 0 ? 1 : 0;
+            } else {
+              similitudBase = valor <= entrada ? 1 : Math.max(0, 1 - ((valor - entrada) / valor));
+            }
+            similitud = similitudBase * pesosMap[campo];
+            break;
 
-            similitudTotal += similitud;
+          // Campos donde más es mejor
+          case 'minutos_de_video_mes':
+          case 'minutos_de_streaming_mes':
+          case 'duracion_maxima_video':
+          case 'numero_avatares':
+          case 'avatares_personales':
+          case 'numero_de_voces':
+          case 'idiomas_soportados':
+            if (entrada == 0) {
+              similitudBase = valor == 0 ? 1 : 0;
+            } else {
+              similitudBase = valor >= entrada ? 1 : Math.max(0, 1 - ((entrada - valor) / entrada));
+            }
+            similitud = similitudBase * pesosMap[campo];
+            break;
+
+          // Campos booleanos: se busca coincidencia exacta
+          case 'tiene_streaming':
+          case 'streaming_con_sdk':
+          case 'traduccion_automatica':
+          case 'clonado_de_voz':
+          case 'expresiones_del_avatar':
+          case 'licencia_comercial':
+          case 'entrada_alternativa':
+            similitudBase = entrada == valor ? 1 : 0;
+            similitud = similitudBase * pesosMap[campo];
+            break;
+
+          // Resolución: se considera superior si es igual o mejor que la solicitada
+          case 'resolucion_del_video':
+            similitudBase = entrada <= valor ? 1 : 0;
+            similitud = similitudBase * pesosMap[campo];
+            break;
+
+          // Campos cualitativos categóricos
+          case 'sincronizacion_labial':
+          case 'calidad_api':
+          case 'velocidad_de_generacion':
+            similitudBase = entrada == valor ? 1 : 0;
+            similitud = similitudBase * pesosMap[campo];
+            break;
         }
 
-        //Añadimos la similitudTotal obtenida al array de resultados
-        resultados.push({ proveedor: proveedor.proveedor, plan: proveedor.plan, similitud: similitudTotal });
+        // Acumulamos la similitud ponderada
+        similitudTotal += similitud;
+      }
+
+      // Guardamos el proveedor con su puntuación total de similitud
+      resultados.push({ proveedor: proveedor.proveedor, plan: proveedor.plan, similitud: similitudTotal });
     });
 
-    // Ordenamos los resultados por similitud, en orden desdendente para que la tabla sea más legible
+    // Ordenamos los resultados de mayor a menor similitud
     resultados.sort((a, b) => b.similitud - a.similitud);
 
-    // Calcular el valor máximo de similitud
+    // Buscamos el valor máximo alcanzado de similitud
     const maximoSimilitud = Math.max(...resultados.map(r => r.similitud));
 
-    // Obtener todos los proveedores con la máxima similitud
+    // Filtramos todos los proveedores que hayan alcanzado ese valor máximo
     const maximos = resultados.filter(r => r.similitud === maximoSimilitud);
 
-    // Calcular suma total de pesos de las características elegidas para obtener el máximo de similitud que se puede alcanzar
+    // Calculamos la suma total de pesos de los campos elegidos
     const totalPesoConfigurado = camposSeleccionados.reduce((acc, campo) => acc + (pesosMap[campo] || 0.5), 0);
 
-    
+    // Devolvemos los resultados como JSON
     res.json({ totalPesoConfigurado, maximos, resultados });
 
-
- 
-
   } catch (error) {
+    // Captura de errores generales y respuesta de error al cliente
     console.error("Error:", error);
     res.status(500).json({ error: "Error interno del servidor." });
-  } 
+  }
 };
 
 module.exports = { obtenerMejorProveedor };

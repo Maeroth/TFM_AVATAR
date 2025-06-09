@@ -87,3 +87,33 @@ button:focus-visible {
     transform: translateY(0);
   }
 }
+
+@keyframes entradaDesdeIzquierda {
+  0% {
+    opacity: 0;
+    transform: translateX(-150px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes entradaDesdeDerecha {
+  0% {
+    opacity: 0;
+    transform: translateX(150px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animar-entrada-izquierda {
+  animation: entradaDesdeIzquierda 1.6s ease-out forwards;
+}
+
+.animar-entrada-derecha {
+  animation: entradaDesdeDerecha 1.6s ease-out forwards;
+}

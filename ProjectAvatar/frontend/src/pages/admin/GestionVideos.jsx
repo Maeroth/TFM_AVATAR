@@ -14,6 +14,8 @@ const GestionVideos = () => {
   const [loading, setLoading] = useState(true);// Control de carga inicial
   const [loadingDelete, setLoadingDelete] = useState(null); //control para el borrado de un vídeo
   const [hasta, setHasta] = useState("");
+  const [videoEnProceso, setVideoEnProceso] = useState(null);
+
 
   /*
     Busca los vídeos que hay en base de datos. Se puede buscar por criterios.
@@ -69,18 +71,22 @@ const GestionVideos = () => {
     Publica en la red social X (antiguo Twitter)
   */
   const publicarEnX = async (videoId) => {
-  try {
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/X/publicarVideoEnX`, {
-      videoId
-    });
+    try {
+      setVideoEnProceso(videoId); // activa el spinner para este vídeo
 
-    alert("Vídeo publicado correctamente en X");
-    fetchVideos();
-  } catch (err) {
-    console.error("Error publicando en X:", err);
-    alert("Error al publicar en X");
-  }
-};
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/X/publicarVideoEnX`, {
+        videoId
+      });
+
+      fetchVideos(); // recarga la tabla
+    } catch (err) {
+      console.error("Error publicando en X:", err);
+      alert("Error al publicar en X");
+    } finally {
+      setVideoEnProceso(null); // desactiva el spinner
+    }
+  };
+
 
 /*
   Elimina el vídeo seleccionado en la tabla
@@ -225,25 +231,35 @@ if (loading) { //Si la pantalla se está cargando todavía de la búsqueda inici
                   )}
                 </td>
                 <td className="align-middle text-center">
-                  {video.estado_peticion_did === "done" && (
-                    video.publicado ? (
-                      <a
-                        href={video.url_publicacion}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-sm btn-outline-info"
-                      >
-                        🐦 Ver Tweet
-                      </a>
-                    ) : (
-                      <button
-                        className="btn btn-sm btn-success"
-                        onClick={() => publicarEnX(video._id)}
-                      >
-                        📤 Publicar en X
-                      </button>
-                    )
-                  )}
+                   <div className="d-flex justify-content-center align-items-center h-100">
+                      {video.estado_peticion_did === "done" && (
+                        video.publicado ? (
+                          <a
+                            href={video.url_publicacion}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-sm btn-outline-info"
+                          >
+                            🐦 Ver Tweet
+                          </a>
+                        ) : (
+                          <button
+                            className="btn btn-sm btn-success d-flex align-items-center justify-content-center gap-2"
+                            onClick={() => publicarEnX(video._id)}
+                            disabled={videoEnProceso === video._id}
+                          >
+                            {videoEnProceso === video._id ? (
+                              <>
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Publicando...
+                              </>
+                            ) : (
+                              "📤 Publicar en X"
+                            )}
+                          </button>
+                        )
+                      )}
+                    </div>
                 </td>
                 <td className="align-middle text-center">
                   {video.url ? (
