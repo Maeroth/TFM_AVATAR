@@ -86,6 +86,11 @@ const GestionParametrosAvatarStream = () => {
     }
   });
 
+  const handleChange = (e) => {
+    setVozSeleccionada(e.target.value);
+    onSeleccionarVoz(e.target.value);
+  };
+
   // Función que carga la configuración actual del avatar de streaming desde el backend
   const cargarDatos = async () => {
     try {
@@ -270,6 +275,22 @@ if (alerta) {
                 }}
               />
             )}
+          </div>
+          {/* Muestra las voces disponibles*/}
+          <div className="mt-3">
+            <label className="form-label fw-semibold">Selecciona una voz <span className="text-danger">*</span></label>
+            <select
+              className="form-select"
+              value={vozSeleccionada}
+              onChange={handleChange}
+            >
+              <option value="">Elige una voz</option>
+              {voces.map((voz) => (
+                <option key={voz.id} value={voz.id}>
+                  {voz.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="d-flex justify-content-center mt-4">
