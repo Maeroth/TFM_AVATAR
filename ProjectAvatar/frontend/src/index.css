@@ -117,3 +117,12 @@ button:focus-visible {
 .animar-entrada-derecha {
   animation: entradaDesdeDerecha 1.6s ease-out forwards;
 }
+
+.titulo_cabecera_layout {
+  background: linear-gradient(135deg, #ffc107, #ff5722); /* amarillo → naranja en diagonal */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* por compatibilidad */
+  color: transparent;
+  font-weight: bold;
+}

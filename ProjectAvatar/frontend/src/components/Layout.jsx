@@ -26,7 +26,7 @@ const Layout = () => {
           className="position-absolute top-50 start-50 translate-middle m-0 text-center"
           style={{ fontSize: "2.5rem", whiteSpace: "nowrap" }}
         >
-          Plataforma de Gestión de Avatares Virtuales
+          Plataforma de gestión <strong className="titulo_cabecera_layout">GO-AVATAR</strong>
         </h1>
 
         {/* Usuario logueado en esquina superior derecha */}
