@@ -47,7 +47,7 @@ cd TFM_AVATAR
 cd backend
 npm install
 # Crear un archivo .env con tus credenciales y claves (ver ejemplo abajo)
-node index.js
+node server.js
 ```
 
 ### 3. Frontend
