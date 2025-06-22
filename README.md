@@ -9,7 +9,7 @@ Este repositorio contiene el desarrollo completo del Trabajo Fin de Máster (TFM
 - Selección óptima de proveedor de servicios mediante un sistema experto basado en reglas.
 - Gestión y edición de proveedores, pesos técnicos y configuración de avatares.
 - Publicación automática de vídeos en redes sociales (X/Twitter).
-- Interfaz separada para usuarios expertos y externos.
+- Interfaz separada para usuarios expertos, administradores y externos.
 
 ## Tecnologías utilizadas
 
