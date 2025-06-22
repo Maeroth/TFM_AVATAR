@@ -33,8 +33,6 @@ Este repositorio contiene el desarrollo completo del Trabajo Fin de Máster (TFM
 
 ## Instalación y ejecución local
 
-### Opción 1: Con Docker (recomendada)
-
 1. Clonar el repositorio:
 
 git clone https://github.com/tu-usuario/TFM_AVATAR.git
