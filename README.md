@@ -2,7 +2,7 @@
 
 Este repositorio contiene el desarrollo completo del Trabajo Fin de Máster (TFM) titulado **“GoAvatar”**, cuyo objetivo es permitir la creación y asesoramiento mediante avatares realistas basados en inteligencia artificial, integrando diferentes servicios cloud y tecnologías modernas.
 
-## 🚀 Funcionalidades principales
+## Funcionalidades principales
 
 - Generación automática de vídeos a partir de texto o audio, usando la API de [D-ID](https://www.d-id.com/).
 - Interacción en tiempo real con un avatar conversacional.
@@ -11,7 +11,7 @@ Este repositorio contiene el desarrollo completo del Trabajo Fin de Máster (TFM
 - Publicación automática de vídeos en redes sociales (X/Twitter).
 - Interfaz separada para usuarios expertos y externos.
 
-## 🛠️ Tecnologías utilizadas
+## Tecnologías utilizadas
 
 ### Backend
 - Node.js + Express
