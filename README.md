@@ -1,4 +1,4 @@
-# TFM_AVATAR – Generación de vídeos con avatares realistas mediante inteligencia artificial
+# GoAvatar – Generación de vídeos con avatares realistas mediante inteligencia artificial
 
 Este repositorio contiene el desarrollo completo del Trabajo Fin de Máster (TFM) titulado **“GoAvatar”**, cuyo objetivo es permitir la creación y asesoramiento mediante avatares realistas basados en inteligencia artificial, integrando diferentes servicios cloud y tecnologías modernas.
 
