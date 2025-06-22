@@ -1,65 +1,33 @@
-# GoAvatar – Generación de vídeos con avatares realistas mediante inteligencia artificial
+# README – GoAvatar
 
+## Descripción del proyecto
 
-Este repositorio contiene el desarrollo completo del Trabajo Fin de Máster (TFM) titulado **“GoAvatar”**, cuyo objetivo es permitir la creación y asesoramiento mediante avatares realistas basados en inteligencia artificial, integrando diferentes servicios cloud y tecnologías modernas.
+Este repositorio contiene el desarrollo completo del Trabajo Fin de Máster (TFM) titulado “GoAvatar”, cuyo objetivo es permitir la creación y asesoramiento mediante avatares realistas basados en inteligencia artificial, integrando diferentes servicios cloud y tecnologías modernas.
 
 ## Funcionalidades principales
 
-- Generación automática de vídeos a partir de texto o audio, usando la API de [D-ID](https://www.d-id.com/).
-- Interacción en tiempo real con un avatar conversacional.
-- Selección óptima de proveedor de servicios mediante un sistema experto basado en reglas.
-- Gestión y edición de proveedores, pesos técnicos y configuración de avatares.
-- Publicación automática de vídeos en redes sociales (X/Twitter).
-- Interfaz separada para usuarios expertos, administradores y externos.
+* Generación automática de vídeos con la API de D-ID
+* Asesoramiento en tiempo real mediante avatar
+* Selección de proveedor óptimo con sistema experto basado en reglas
+* Publicación automática en X (Twitter)
+* Interfaz separada para roles: admin, experto, usuario externo
 
 ## Tecnologías utilizadas
 
-### Backend
-- Node.js + Express
-- MongoDB Atlas
-- JWT para autenticación
-- Multer / FFmpeg / Axios
-- Docker + Render.com
-
-### Frontend
-- React + Vite
-- React Router DOM
-- Bootstrap 5
-- Comunicación vía RESTful API
-
-### Otros
-- D-ID API
-- Ngrok (en fase de pruebas)
-- GitHub para control de versiones
-
+**Backend:** Node.js, Express, MongoDB Atlas, JWT, Multer, FFmpeg, Docker
+**Frontend:** React, Vite, React Router, Bootstrap 5
+**Otros:** API D-ID, Ngrok, Render.com
 
 ## Instalación y ejecución local
 
-### 1. Clonar el repositorio
+1. Clonar el repositorio:
 
 ```bash
 git clone https://github.com/tu-usuario/TFM_AVATAR.git
 cd TFM_AVATAR
 ```
 
-### 2. Backend
-
-```bash
-cd backend
-npm install
-# Crear un archivo .env con tus credenciales y claves (ver ejemplo abajo)
-node server.js
-```
-
-### 3. Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### 4. Archivo `.env` (backend)
+2. Crear el archivo `.env` en `/backend` con:
 
 ```env
 PORT=3000
@@ -70,20 +38,53 @@ NGROK_API_TOKEN=...
 TWITTER_BEARER_TOKEN=...
 ```
 
-## Despliegue
+3. Lanzar los contenedores:
 
-El backend y frontend están contenedorizados con Docker y desplegados en [Render.com](https://render.com). La base de datos se aloja en [MongoDB Atlas](https://cloud.mongodb.com/).
+```bash
+docker-compose up --build
+```
+
+4. Acceder a:
+
+* Frontend: [http://localhost:5173](http://localhost:5173)
+* Backend: [http://localhost:3000](http://localhost:3000)
+
+
+## Requisitos previos para ejecutar con Docker
+
+Para poder ejecutar correctamente este proyecto usando contenedores, es necesario tener instalado:
+
+* **Docker Desktop:** [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
+  Compatible con Windows, macOS y WSL 2. Incluye tanto el motor Docker como Docker Compose.
+
+* **Permisos suficientes** para ejecutar comandos Docker en terminal (modo administrador o `sudo` si es necesario).
+
+> En sistemas Windows se recomienda:
+>
+> * Tener habilitada la virtualización en la BIOS.
+> * Usar WSL 2 y tener Docker Desktop configurado con integración a WSL y al sistema de archivos.
+
+Una vez Docker esté instalado y activo, el proyecto puede ejecutarse con:
+
+```bash
+docker-compose up --build
+```
+
+## Despliegue en producción
+
+* Backend y frontend desplegados en Render.com (Docker)
+* Base de datos en MongoDB Atlas (cloud)
+* Comunicación entre servicios cifrada (HTTPS/TLS)
 
 ## Pruebas
 
-Las funcionalidades clave se han validado mediante:
-- Pruebas funcionales manuales
-- Simulación de webhooks y respuestas de proveedor
-- Verificación de publicación automática en X/Twitter
+* Pruebas funcionales manuales
+* Simulación de webhooks
+* Publicación en redes sociales automatizada
 
 ## Documentación
 
-Toda la memoria del proyecto (incluyendo anexos, especificaciones y diseño) está disponible en la carpeta `/docs`.
+Disponible en la carpeta `/docs` (Memoria\_TFM.docx y anexos)
 
 ## Licencia
 
